@@ -1,7 +1,7 @@
 # cmdr-http2
 
 A [`cmdr`](https://github.com/hedzr/cmdr) demo app.
-`cmdr-http2` implements a http2 server with full daemon supports.
+`cmdr-http2` implements a http2 server with full daemon supports and graceful shutdown.
 
 ```bash
 
