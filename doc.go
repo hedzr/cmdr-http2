@@ -2,7 +2,7 @@
  * Copyright © 2019 Hedzr Yeh.
  */
 
-package cmdr
+package cmdr_http2
 
 const (
 	// AppName const
