@@ -20,7 +20,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	// cmdr.EnableHelpCommands = false
 	// cmdr.EnableGenerateCommands = false
 
-	daemon.Enable(server.NewDaemon(), nil, nil, nil)
+	daemon.Enable(server.NewDaemon(), modifier, onAppStart, onAppExit)
 
 	// var cmd *Command
 
