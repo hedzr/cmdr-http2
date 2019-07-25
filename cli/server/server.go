@@ -9,6 +9,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
@@ -68,7 +69,6 @@ func OnBuildCmd(root *cmdr.RootCommand) {
 func (d *daemonImpl) OnInstall(cxt *daemon.Context, cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnInstall", cmd.GetRoot().AppName)
 	return
-	// panic("implement me")
 }
 
 func (d *daemonImpl) OnUninstall(cxt *daemon.Context, cmd *cmdr.Command, args []string) (err error) {
@@ -105,7 +105,7 @@ func (d *daemonImpl) domains(topDomains ...string) (domainList []string) {
 func (d *daemonImpl) checkAndEnableAutoCert() (tlsConfig *tls.Config) {
 	tlsConfig = &tls.Config{}
 
-	if cmdr.GetBool("app.server.autocert.enabled") {
+	if cmdr.GetBoolR("server.autocert.enabled") {
 		logrus.Debugf("...autocert enabled")
 		d.certManager = &autocert.Manager{
 			Prompt:     autocert.AcceptTOS,
