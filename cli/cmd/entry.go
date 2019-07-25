@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/logex"
 	"github.com/sirupsen/logrus"
 )
 
@@ -13,7 +14,8 @@ import (
 func Entry() {
 
 	logrus.SetLevel(logrus.DebugLevel)
-	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
+	// logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
+	logex.Enable()
 
 	// To disable internal commands and flags, uncomment the following codes
 	// cmdr.EnableVersionCommands = false
