@@ -9,6 +9,7 @@ import (
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/server"
 	"github.com/hedzr/cmdr/plugin/daemon"
+	"github.com/sirupsen/logrus"
 )
 
 func buildRootCmd() (rootCmd *cmdr.RootCommand) {
@@ -130,41 +131,45 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	msCmd := root.NewSubCommand().
 		Titles("ms", "micro-service", "microservice").
-		Description("micro-service operations...", "").
+		Description("micro-service operations... [fake]", "").
 		Group("")
-
-	msCmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("mm", "money").
-		Description("A placeholder flag.", "").
-		Group("").
-		DefaultValue(false, "")
 
 	msCmd.NewFlag(cmdr.OptFlagTypeString).
 		Titles("n", "name").
 		Description("name of the service", ``).
-		DefaultValue("", "NAME")
+		DefaultValue("", "NAME").
+		Group("service spec")
 	msCmd.NewFlag(cmdr.OptFlagTypeString).
 		Titles("i", "id", "ID").
 		Description("unique id of the service", ``).
-		DefaultValue("", "ID")
+		DefaultValue("", "ID").
+		Group("service spec")
 	msCmd.NewFlag(cmdr.OptFlagTypeBool).
 		Titles("a", "all").
 		Description("all services", ``).
-		DefaultValue(false, "")
+		DefaultValue(false, "").
+		Group("service spec")
 
 	msCmd.NewFlag(cmdr.OptFlagTypeUint).
 		Titles("t", "retry").
 		Description("", "").
 		Group("").
-		DefaultValue(3, "RETRY")
+		DefaultValue(3, "RETRY").
+		Group("Z tests")
+	msCmd.NewFlag(cmdr.OptFlagTypeBool).
+		Titles("mm", "money").
+		Description("A placeholder flag.", "").
+		DefaultValue(false, "").
+		Group("Z tests")
 
 	// ms ls
 
 	msCmd.NewSubCommand().
 		Titles("ls", "list", "l", "lst", "dir").
-		Description("list tags", "").
+		Description("list tags [fake]", "").
 		Group("2333.List").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
+			logrus.Error("implement me")
 			return
 		})
 
@@ -172,7 +177,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	msTagsCmd := msCmd.NewSubCommand().
 		Titles("t", "tags").
-		Description("tags operations of a micro-service", "").
+		Description("tags operations of a micro-service [fake]", "").
 		Group("")
 
 	// cTags.NewFlag(cmdr.OptFlagTypeString).
@@ -199,7 +204,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	msTagsCmd.NewSubCommand().
 		Titles("ls", "list", "l", "lst", "dir").
-		Description("list tags", "").
+		Description("list tags [fake]", "").
 		Group("2333.List").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
@@ -209,7 +214,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	tagsAdd := msTagsCmd.NewSubCommand().
 		Titles("a", "add", "new", "create").
-		Description("add tags", "").
+		Description("add tags [fake]", "").
 		Deprecated("0.2.1").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
@@ -224,7 +229,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	c1 := tagsAdd.NewSubCommand().
 		Titles("c", "check", "chk").
-		Description("[sub] check", "").
+		Description("[sub] check [fake]", "").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
@@ -232,7 +237,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	c2 := c1.NewSubCommand().
 		Titles("pt", "check-point", "chk-pt").
-		Description("[sub][sub] checkpoint", "").
+		Description("[sub][sub] checkpoint [fake]", "").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
@@ -251,7 +256,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	c3 := c1.NewSubCommand().
 		Titles("in", "check-in", "chk-in").
-		Description("[sub][sub] check-in", "").
+		Description("[sub][sub] check-in [fake]", "").
 		Group("")
 
 	c3.NewFlag(cmdr.OptFlagTypeString).
@@ -276,7 +281,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	c1.NewSubCommand().
 		Titles("out", "check-out", "chk-out").
-		Description("[sub][sub] check-out", "").
+		Description("[sub][sub] check-out [fake]", "").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
@@ -286,7 +291,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	tagsRm := msTagsCmd.NewSubCommand().
 		Titles("r", "rm", "remove", "delete", "del", "erase").
-		Description("remove tags", "").
+		Description("remove tags [fake]", "").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
@@ -302,7 +307,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	msTagsModifyCmd := msTagsCmd.NewSubCommand().
 		Titles("m", "modify", "mod", "modi", "update", "change").
-		Description("modify tags of a service.", ``).
+		Description("modify tags of a service. [fake]", ``).
 		Action(msTagsModify)
 
 	attachModifyFlags(msTagsModifyCmd)
@@ -322,7 +327,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	tagsTog := msTagsCmd.NewSubCommand().
 		Titles("t", "toggle", "tog", "switch").
-		Description("toggle tags", "").
+		Description("toggle tags [fake]", "").
 		Group("").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			return
