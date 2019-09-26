@@ -8,20 +8,10 @@ import (
 	"fmt"
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/server"
-	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
 )
 
 func buildRootCmd() (rootCmd *cmdr.RootCommand) {
-
-	// To disable internal commands and flags, uncomment the following codes
-	// cmdr.EnableVersionCommands = false
-	// cmdr.EnableVerboseCommands = false
-	// cmdr.EnableCmdrCommands = false
-	// cmdr.EnableHelpCommands = false
-	// cmdr.EnableGenerateCommands = false
-
-	daemon.Enable(server.NewDaemon(), modifier, onAppStart, onAppExit)
 
 	// var cmd *Command
 
