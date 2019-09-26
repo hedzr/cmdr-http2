@@ -19,4 +19,8 @@ go run cli/main.go h2
 # or via curl
 curl -k https://localhost:5151/
 
+#
+# Build the binary
+#
+go build cli/main.go
 ```
