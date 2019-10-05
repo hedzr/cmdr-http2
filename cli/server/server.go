@@ -41,8 +41,8 @@ func NewDaemon() daemon.Daemon {
 	return &daemonImpl{}
 }
 
-func OnBuildCmd(root *cmdr.RootCommand) {
-	cmdr.AddOnBeforeXrefBuilding(func(root *cmdr.RootCommand, args []string) {
+func WithHook() cmdr.ExecOption {
+	return cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
 
 		// app.server.port
 		if cx := cmdr.FindSubCommand("server", &root.Command); cx != nil {
@@ -59,8 +59,31 @@ func OnBuildCmd(root *cmdr.RootCommand) {
 					DefaultValue(defaultPort, "PORT")
 			}
 		}
+	}, func(root *cmdr.RootCommand, args []string) {
+
 	})
 }
+
+// func OnBuildCmd(root *cmdr.RootCommand) {
+// 	cmdr.AddOnBeforeXrefBuilding(func(root *cmdr.RootCommand, args []string) {
+// 
+// 		// app.server.port
+// 		if cx := cmdr.FindSubCommand("server", &root.Command); cx != nil {
+// 			// logrus.Debugf("`server` command found")
+// 			opt := cmdr.NewCmdFrom(cx)
+// 			if flg := cmdr.FindFlag("port", cx); flg != nil {
+// 				flg.DefaultValue = defaultPort
+// 
+// 			} else {
+// 				opt.NewFlag(cmdr.OptFlagTypeInt).
+// 					Titles("p", "port").
+// 					Description("the port to listen.", "").
+// 					Group("").
+// 					DefaultValue(defaultPort, "PORT")
+// 			}
+// 		}
+// 	})
+// }
 
 //
 //
