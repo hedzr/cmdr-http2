@@ -45,10 +45,10 @@ func WithHook() cmdr.ExecOption {
 	return cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
 
 		// app.server.port
-		if cx := cmdr.FindSubCommand("server", &root.Command); cx != nil {
+		if cx := root.Command.FindSubCommand("server"); cx != nil {
 			// logrus.Debugf("`server` command found")
 			opt := cmdr.NewCmdFrom(cx)
-			if flg := cmdr.FindFlag("port", cx); flg != nil {
+			if flg := cx.FindFlag("port"); flg != nil {
 				flg.DefaultValue = defaultPort
 
 			} else {
