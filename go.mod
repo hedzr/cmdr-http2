@@ -2,6 +2,10 @@ module github.com/hedzr/cmdr-http2
 
 go 1.12
 
+// replace github.com/hedzr/cmdr => ../cmdr
+
+// replace github.com/hedzr/logex v0.0.0 => ../logex
+
 require (
 	github.com/hedzr/cmdr v1.5.0
 	github.com/hedzr/logex v1.0.1
