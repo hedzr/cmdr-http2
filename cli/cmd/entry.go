@@ -15,9 +15,9 @@ import (
 // Entry is app main entry
 func Entry() {
 
-	logrus.SetLevel(logrus.DebugLevel)
+	// logrus.SetLevel(logrus.DebugLevel)
 	// logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
-	logex.Enable()
+	logex.EnableWith(logrus.DebugLevel)
 
 	if err := cmdr.Exec(buildRootCmd(),
 		// To disable internal commands and flags, uncomment the following codes
