@@ -24,7 +24,7 @@ func clearLines(lineCount int) {
 }
 
 func modifier(daemonServerCommands *cmdr.Command) *cmdr.Command {
-	if startCmd := cmdr.FindSubCommand("start", daemonServerCommands); startCmd != nil {
+	if startCmd := daemonServerCommands.FindSubCommand("start"); startCmd != nil {
 		startCmd.PreAction = onServerPreStart
 		startCmd.PostAction = onServerPostStop
 	}
