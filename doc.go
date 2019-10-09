@@ -8,7 +8,7 @@ const (
 	// AppName const
 	AppName = "cmdr-http2" // main app-name
 	// Version const
-	Version = "0.1.0" // version name
+	Version = "1.1.1" // version name
 	// VersionInt const
-	VersionInt = 0x000100 // using as
+	VersionInt = 0x010101 // using as
 )

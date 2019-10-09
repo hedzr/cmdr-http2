@@ -27,7 +27,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	// root
 
-	root := cmdr.Root(appName, "1.0.1").
+	root := cmdr.Root(appName, "1.1.1").
 		// Header("cmdr-http2 - An HTTP2 server - no version - hedzr").
 		Copyright("cmdr-http2 - An HTTP2 server", "Hedzr").
 		Description(desc, longDesc).
