@@ -22,10 +22,10 @@ func Entry() {
 	if err := cmdr.Exec(buildRootCmd(),
 		// To disable internal commands and flags, uncomment the following codes
 		// cmdr.WithBuiltinCommands(false, false, false, false, false),
-		
+
 		daemon.WithDaemon(server.NewDaemon(), modifier, onAppStart, onAppExit),
 		server.WithHook(),
-		
+
 		cmdr.WithHelpTabStop(50),
 	); err != nil {
 		logrus.Errorf("Error: %v", err)

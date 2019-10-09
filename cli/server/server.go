@@ -11,6 +11,7 @@ import (
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"github.com/hedzr/cmdr/plugin/daemon"
+	"github.com/hedzr/cmdr/plugin/daemon/impl"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 	"io"
@@ -66,14 +67,14 @@ func WithHook() cmdr.ExecOption {
 
 // func OnBuildCmd(root *cmdr.RootCommand) {
 // 	cmdr.AddOnBeforeXrefBuilding(func(root *cmdr.RootCommand, args []string) {
-// 
+//
 // 		// app.server.port
 // 		if cx := cmdr.FindSubCommand("server", &root.Command); cx != nil {
 // 			// logrus.Debugf("`server` command found")
 // 			opt := cmdr.NewCmdFrom(cx)
 // 			if flg := cmdr.FindFlag("port", cx); flg != nil {
 // 				flg.DefaultValue = defaultPort
-// 
+//
 // 			} else {
 // 				opt.NewFlag(cmdr.OptFlagTypeInt).
 // 					Titles("p", "port").
@@ -89,18 +90,18 @@ func WithHook() cmdr.ExecOption {
 //
 //
 
-func (d *daemonImpl) OnInstall(cxt *daemon.Context, cmd *cmdr.Command, args []string) (err error) {
+func (d *daemonImpl) OnInstall(cxt *impl.Context, cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnInstall", cmd.GetRoot().AppName)
 	return
 }
 
-func (d *daemonImpl) OnUninstall(cxt *daemon.Context, cmd *cmdr.Command, args []string) (err error) {
+func (d *daemonImpl) OnUninstall(cxt *impl.Context, cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnUninstall", cmd.GetRoot().AppName)
 	return
 	// panic("implement me")
 }
 
-func (d *daemonImpl) OnStatus(cxt *daemon.Context, cmd *cmdr.Command, p *os.Process) (err error) {
+func (d *daemonImpl) OnStatus(cxt *impl.Context, cmd *cmdr.Command, p *os.Process) (err error) {
 	fmt.Printf("%s v%v\n", cmd.GetRoot().AppName, cmd.GetRoot().Version)
 	fmt.Printf("PID=%v\nLOG=%v\n", cxt.PidFileName, cxt.LogFileName)
 	return

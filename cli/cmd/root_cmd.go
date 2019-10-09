@@ -345,7 +345,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	//
 	//
 
-	server.OnBuildCmd(rootCmd)
+	// server.OnBuildCmd(rootCmd)
 
 	return
 }
