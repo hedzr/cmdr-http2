@@ -53,15 +53,15 @@ func WithHook() cmdr.ExecOption {
 				flg.DefaultValue = defaultPort
 
 			} else {
-				opt.NewFlag(cmdr.OptFlagTypeInt).
+				opt.NewFlagV(defaultPort).
 					Titles("p", "port").
 					Description("the port to listen.", "").
 					Group("").
-					DefaultValue(defaultPort, "PORT")
+					Placeholder("PORT")
 			}
 		}
 	}, func(root *cmdr.RootCommand, args []string) {
-
+		logrus.Debugf("cmd: root=%+v, args: %v", root, args)
 	})
 }
 
