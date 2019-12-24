@@ -30,6 +30,12 @@ func Entry() {
 		cmdr.WithLogexPrefix("logger"),
 
 		cmdr.WithWatchMainConfigFileToo(true),
+		cmdr.WithOptionMergeModifying(func(keyPath string, value, oldVal interface{}) {
+			logrus.Infof("%%-> -> %q: %v -> %v", keyPath, oldVal, value)
+		}),
+		cmdr.WithOptionModifying(func(keyPath string, value, oldVal interface{}) {
+			logrus.Infof("%%-> -> %q: %v -> %v", keyPath, oldVal, value)
+		}),
 
 		cmdr.WithHelpTabStop(50),
 	); err != nil {
