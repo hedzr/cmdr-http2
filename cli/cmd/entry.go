@@ -5,10 +5,12 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/server"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
+	"runtime"
 	"strings"
 )
 
@@ -66,8 +68,27 @@ func Entry() {
 				AttachToRoot(root)
 		}, nil),
 
+		cmdr.WithUnknownOptionHandler(onUnknownOptionHandler),
+		cmdr.WithUnhandledErrorHandler(onUnhandleErrorHandler),
+
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}
 
+}
+
+func onUnknownOptionHandler(isFlag bool, title string, cmd *cmdr.Command, args []string) (fallbackToDefaultDetector bool) {
+	return true
+}
+
+func onUnhandleErrorHandler(err interface{}) {
+	// debug.PrintStack()
+	// pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
+	dumpStacks()
+}
+
+func dumpStacks() {
+	buf := make([]byte, 16384)
+	buf = buf[:runtime.Stack(buf, false)]
+	fmt.Printf("=== BEGIN goroutine stack dump ===\n%s\n=== END goroutine stack dump ===\n", buf)
 }
