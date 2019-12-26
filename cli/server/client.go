@@ -52,7 +52,8 @@ func client1() (err error) {
 			logrus.Fatal("Cannot close resp.body.", err)
 		}
 	}()
-	body, err := ioutil.ReadAll(resp.Body)
+	var body []byte
+	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("Failed reading response body: %s", err)
 	}

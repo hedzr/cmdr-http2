@@ -5,45 +5,10 @@
 package vxconf
 
 import (
-	"encoding/json"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
 	"regexp"
 	"strconv"
 	"unicode/utf8"
 )
-
-func JsonToString(in interface{}, pretty bool) string {
-	var b []byte
-	var err error
-	if pretty {
-		b, err = json.MarshalIndent(in, "", "  ")
-	} else {
-		b, err = json.Marshal(in)
-	}
-	if err != nil {
-		logrus.Errorf("json decode string failed: %v", err)
-		return "<error-json-object>"
-	} else {
-		return string(b)
-	}
-}
-
-func YamlToString(in interface{}, pretty bool) string {
-	var b []byte
-	var err error
-	if pretty {
-		b, err = yaml.Marshal(in)
-	} else {
-		b, err = yaml.Marshal(in)
-	}
-	if err != nil {
-		logrus.Errorf("yaml decode string failed: %v", err)
-		return "<error-yaml-object>"
-	} else {
-		return string(b)
-	}
-}
 
 // var reFind = regexp.MustCompile(`^\s*[^\s\:]+\:\s*["']?.*\\u.*["']?\s*$`)
 var reFind = regexp.MustCompile(`[^\s\:]+\:\s*["']?.*\\u.*["']?`)

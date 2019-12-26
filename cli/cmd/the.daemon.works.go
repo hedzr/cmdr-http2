@@ -7,9 +7,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/hedzr/cmdr"
-	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -47,41 +45,42 @@ func onServerPostStop(cmd *cmdr.Command, args []string) {
 
 // onServerPreStart is earlier than onAppStart.
 func onServerPreStart(cmd *cmdr.Command, args []string) (err error) {
-	earlierInitLogger()
+	// earlierInitLogger() // deprecated by cmdr.WithLogex()
 	logrus.Debug("onServerPreStart")
 	return
 }
 
-func earlierInitLogger() {
-	l := "OFF"
-	if !vxconf.IsProd() {
-		l = "DEBUG"
-	}
-	l = vxconf.GetStringR("server.logger.level", l)
-	logrus.SetLevel(stringToLevel(l))
-	if l == "OFF" {
-		logrus.SetOutput(ioutil.Discard)
-	}
-}
+// earlierInitLogger is deprecated by cmdr.WithLogex()
+// func earlierInitLogger() {
+// 	l := "OFF"
+// 	if !vxconf.IsProd() {
+// 		l = "DEBUG"
+// 	}
+// 	l = vxconf.GetStringR("server.logger.level", l)
+// 	logrus.SetLevel(stringToLevel(l))
+// 	if l == "OFF" {
+// 		logrus.SetOutput(ioutil.Discard)
+// 	}
+// }
 
-func stringToLevel(s string) logrus.Level {
-	s = strings.ToUpper(s)
-	switch s {
-	case "TRACE":
-		return logrus.TraceLevel
-	case "DEBUG", "devel", "dev":
-		return logrus.DebugLevel
-	case "INFO":
-		return logrus.InfoLevel
-	case "WARN":
-		return logrus.WarnLevel
-	case "ERROR":
-		return logrus.ErrorLevel
-	case "FATAL":
-		return logrus.FatalLevel
-	case "PANIC":
-		return logrus.PanicLevel
-	default:
-		return logrus.FatalLevel
-	}
-}
+// func stringToLevel(s string) logrus.Level {
+// 	s = strings.ToUpper(s)
+// 	switch s {
+// 	case "TRACE":
+// 		return logrus.TraceLevel
+// 	case "DEBUG", "devel", "dev":
+// 		return logrus.DebugLevel
+// 	case "INFO":
+// 		return logrus.InfoLevel
+// 	case "WARN":
+// 		return logrus.WarnLevel
+// 	case "ERROR":
+// 		return logrus.ErrorLevel
+// 	case "FATAL":
+// 		return logrus.FatalLevel
+// 	case "PANIC":
+// 		return logrus.PanicLevel
+// 	default:
+// 		return logrus.FatalLevel
+// 	}
+// }

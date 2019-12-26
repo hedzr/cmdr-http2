@@ -5,14 +5,10 @@
 package vxconf
 
 import (
-	"encoding/json"
-	"github.com/hedzr/cmdr"
-	"gopkg.in/yaml.v2"
-	"time"
-
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/hedzr/cmdr"
+	"gopkg.in/yaml.v2"
 	"strconv"
 	"strings"
 	"syscall"
@@ -550,170 +546,15 @@ func normalizeValue(value interface{}) (interface{}, error) {
 	return nil, fmt.Errorf("Unsupported type: %T", value)
 }
 
-// JSON -----------------------------------------------------------------------
-
-// ParseJson reads a JSON configuration from the given string.
-func ParseJson(cfg string) (*AppConfig, error) {
-	return parseJson([]byte(cfg))
-}
-
-// ParseJsonFile reads a JSON configuration from the given filename.
-func ParseJsonFile(filename string) (*AppConfig, error) {
-	cfg, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return parseJson(cfg)
-}
-
-// parseJson performs the real JSON parsing.
-func parseJson(cfg []byte) (*AppConfig, error) {
-	var out interface{}
-	var err error
-	if err = json.Unmarshal(cfg, &out); err != nil {
-		return nil, err
-	}
-	if out, err = normalizeValue(out); err != nil {
-		return nil, err
-	}
-	return &AppConfig{Root: out}, nil
-}
-
-// RenderJson renders a JSON configuration.
-func RenderJson(cfg interface{}) (string, error) {
-	b, err := json.Marshal(cfg)
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
-}
-
-// YAML -----------------------------------------------------------------------
-
-// ParseYaml reads a YAML configuration from the given string.
-func ParseYaml(cfg string) (*AppConfig, error) {
-	return parseYaml([]byte(cfg))
-}
-
-// ParseYamlFile reads a YAML configuration from the given filename.
-func ParseYamlFile(filename string) (*AppConfig, error) {
-	cfg, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return parseYaml(cfg)
-}
-
-// parseYaml performs the real YAML parsing.
-func parseYaml(cfg []byte) (*AppConfig, error) {
-	var out interface{}
-	var err error
-	if err = yaml.Unmarshal(cfg, &out); err != nil {
-		return nil, err
-	}
-	if out, err = normalizeValue(out); err != nil {
-		return nil, err
-	}
-	return &AppConfig{Root: out}, nil
-}
-
-// RenderYaml renders a YAML configuration.
-func RenderYaml(cfg interface{}) (string, error) {
-	b, err := yaml.Marshal(cfg)
-	if err != nil {
-		return "", err
-	}
-	return UnescapeUnicode(b), nil
-}
-
 //
 
 //
 // ----------------------------------------------------------------
 //
 
-//
-
-func ToBool(s string) (ret bool) {
-	switch strings.ToLower(s) {
-	case "1", "y", "t", "yes", "true", "ok", "on":
-		ret = true
-	}
-	return
-}
-
-// func GetConfigValue(key, defaultValue string) (ret string) {
-// 	ret = vxconf.GetString(key)
-// 	if len(ret) == 0 {
-// 		ret = defaultValue
-// 	}
-// 	return
-// }
-
-func GetBoolR(key string, defaultValue bool) (ret bool) {
-	s := GetStringR(key, fmt.Sprintf("%v", defaultValue))
-	ret = ToBool(s)
-	return
-}
-
-func GetIntR(key string, defaultValue int) (ret int) {
-	s := GetStringR(key, fmt.Sprintf("%v", defaultValue))
-	var e error
-	if ret, e = strconv.Atoi(s); e != nil {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetDurationR(key string, defaultValue time.Duration) (ret time.Duration) {
-	s := GetStringR(key, fmt.Sprintf("%v", defaultValue))
-	var e error
-	if ret, e = time.ParseDuration(s); e != nil {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetMapR(key string, defaultValue map[string]interface{}) (ret map[string]interface{}) {
-	ret = cmdr.GetMapR(key)
-	if len(ret) == 0 {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetStringSliceR(key string, defaultValue []string) (ret []string) {
-	ret = cmdr.GetStringSliceR(key)
-	if len(ret) == 0 {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetStringRP(prefix, key, defaultValue string) (ret string) {
-	ret = cmdr.GetStringRP(prefix, key)
-	if len(ret) == 0 {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetStringR(key, defaultValue string) (ret string) {
-	ret = cmdr.GetStringR(key)
-	if len(ret) == 0 {
-		ret = defaultValue
-	}
-	return
-}
-
-func GetR(key string) (ret interface{}) {
-	ret = cmdr.GetR(key)
-	return
-}
-
 // IsProd return true if app is in production mode.
 func IsProd() bool {
-	switch GetStringR("runmode", "devel") {
+	switch cmdr.GetStringR("runmode", "devel") {
 	case "prod", "production":
 		return true
 	}
@@ -724,7 +565,7 @@ func IsProd() bool {
 func LoadSectionTo(sectionKeyPath string, configHolder interface{}) (err error) {
 	var b []byte
 
-	runMode := GetStringR("runmode", "prod")
+	runMode := cmdr.GetStringR("runmode", "prod")
 
 	aKey := fmt.Sprintf("%s.%s", sectionKeyPath, runMode)
 	fObj := cmdr.GetMapR(aKey)
