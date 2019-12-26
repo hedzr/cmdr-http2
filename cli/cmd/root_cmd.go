@@ -67,17 +67,17 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 			fmt.Printf("*** Got msg: %s\n", cmdr.GetString("app.mx-test.message"))
 			return
 		})
-	mx.NewFlag(cmdr.OptFlagTypeString).
+	mx.NewFlagV("").
 		Titles("pp", "password").
 		Description("the password requesting.", "").
 		Group("").
-		DefaultValue("", "PASSWORD").
+		Placeholder("PASSWORD").
 		ExternalTool(cmdr.ExternalToolPasswordInput)
-	mx.NewFlag(cmdr.OptFlagTypeString).
+	mx.NewFlagV("").
 		Titles("m", "message", "msg").
 		Description("the message requesting.", "").
 		Group("").
-		DefaultValue("", "MESG").
+		Placeholder("MESG").
 		ExternalTool(cmdr.ExternalToolEditor)
 
 	// http 2 client
@@ -103,19 +103,19 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Titles("b", "backup", "bk", "bf", "bkp").
 		Description("Dump Consul's KV database to a JSON/YAML file", ``).
 		Action(kvBackup)
-	kvBackupCmd.NewFlag(cmdr.OptFlagTypeString).
+	kvBackupCmd.NewFlagV("consul-backup.json").
 		Titles("o", "output").
 		Description("Write output to a file (*.json / *.yml)", ``).
-		DefaultValue("consul-backup.json", "FILE")
+		Placeholder("FILE")
 
 	kvRestoreCmd := kvCmd.NewSubCommand().
 		Titles("r", "restore").
 		Description("restore to Consul's KV store, from a a JSON/YAML backup file", ``).
 		Action(kvRestore)
-	kvRestoreCmd.NewFlag(cmdr.OptFlagTypeString).
+	kvRestoreCmd.NewFlagV("consul-backup.json").
 		Titles("i", "input").
 		Description("Read the input file (*.json / *.yml)", ``).
-		DefaultValue("consul-backup.json", "FILE")
+		Placeholder("FILE")
 
 	// ms
 
