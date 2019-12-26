@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/errors"
 	"gopkg.in/yaml.v2"
 	"strconv"
 	"strings"
@@ -201,7 +202,7 @@ func (c *AppConfig) Int(path string) (int, error) {
 		if i := int(n); fmt.Sprint(i) == fmt.Sprint(n) {
 			return i, nil
 		} else {
-			return 0, fmt.Errorf("Value can't be converted to int: %v", n)
+			return 0, errors.New("Value can't be converted to int: %v", n)
 		}
 	case int:
 		return n, nil
@@ -362,7 +363,7 @@ func (c *AppConfig) Extend(cfg *AppConfig) (*AppConfig, error) {
 
 // typeMismatch returns an error for an expected type.
 func typeMismatch(expected string, got interface{}) error {
-	return fmt.Errorf("Type mismatch: expected %s; got %T", expected, got)
+	return errors.New("Type mismatch: expected %s; got %T", expected, got)
 }
 
 // Fetching -------------------------------------------------------------------
@@ -376,7 +377,7 @@ func Get(cfg interface{}, path string) (interface{}, error) {
 			if k == 0 {
 				parts = parts[1:]
 			} else {
-				return nil, fmt.Errorf("Invalid path %q", path)
+				return nil, errors.New("Invalid path %q", path)
 			}
 		}
 	}
@@ -388,23 +389,23 @@ func Get(cfg interface{}, path string) (interface{}, error) {
 				if int(i) < len(c) {
 					cfg = c[i]
 				} else {
-					return nil, fmt.Errorf(
+					return nil, errors.New(
 						"Index out of range at %q: list has only %v items",
 						strings.Join(parts[:pos+1], "."), len(c))
 				}
 			} else {
-				return nil, fmt.Errorf("Invalid list index at %q",
+				return nil, errors.New("Invalid list index at %q",
 					strings.Join(parts[:pos+1], "."))
 			}
 		case map[string]interface{}:
 			if value, ok := c[part]; ok {
 				cfg = value
 			} else {
-				return nil, fmt.Errorf("Nonexistent map key at %q",
+				return nil, errors.New("Nonexistent map key at %q",
 					strings.Join(parts[:pos+1], "."))
 			}
 		default:
-			return nil, fmt.Errorf(
+			return nil, errors.New(
 				"Invalid type at %q: expected []interface{} or map[string]interface{}; got %T",
 				strings.Join(parts[:pos+1], "."), cfg)
 		}
@@ -423,7 +424,7 @@ func Set(cfg interface{}, path string, value interface{}) error {
 			if k == 0 {
 				parts = parts[1:]
 			} else {
-				return fmt.Errorf("Invalid path %q", path)
+				return errors.New("Invalid path %q", path)
 			}
 		}
 	}
@@ -432,7 +433,7 @@ func Set(cfg interface{}, path string, value interface{}) error {
 	for pos, part := range parts {
 		switch c := (*point).(type) {
 		case []interface{}:
-			if i, error := strconv.ParseInt(part, 10, 0); error == nil {
+			if i, err := strconv.ParseInt(part, 10, 0); err == nil {
 				// 1. normalize slice capacity
 				if int(i) >= cap(c) {
 					c = append(c, make([]interface{}, int(i)-cap(c)+1, int(i)-cap(c)+1)...)
@@ -460,7 +461,7 @@ func Set(cfg interface{}, path string, value interface{}) error {
 				}
 
 			} else {
-				return fmt.Errorf("Invalid list index at %q",
+				return errors.New("Invalid list index at %q",
 					strings.Join(parts[:pos+1], "."))
 			}
 		case map[string]interface{}:
@@ -482,7 +483,7 @@ func Set(cfg interface{}, path string, value interface{}) error {
 				}
 			}
 		default:
-			return fmt.Errorf(
+			return errors.New(
 				"Invalid type at %q: expected []interface{} or map[string]interface{}; got %T",
 				strings.Join(parts[:pos+1], "."), cfg)
 		}
@@ -511,11 +512,11 @@ func normalizeValue(value interface{}) (interface{}, error) {
 		for k, v := range value {
 			key, ok := k.(string)
 			if !ok {
-				return nil, fmt.Errorf("Unsupported map key: %#v", k)
+				return nil, errors.New("Unsupported map key: %#v", k)
 			}
 			item, err := normalizeValue(v)
 			if err != nil {
-				return nil, fmt.Errorf("Unsupported map value: %#v", v)
+				return nil, errors.New("Unsupported map value: %#v", v)
 			}
 			node[key] = item
 		}
@@ -525,7 +526,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 		for key, v := range value {
 			item, err := normalizeValue(v)
 			if err != nil {
-				return nil, fmt.Errorf("Unsupported map value: %#v", v)
+				return nil, errors.New("Unsupported map value: %#v", v)
 			}
 			node[key] = item
 		}
@@ -535,7 +536,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 		for key, v := range value {
 			item, err := normalizeValue(v)
 			if err != nil {
-				return nil, fmt.Errorf("Unsupported list item: %#v", v)
+				return nil, errors.New("Unsupported list item: %#v", v)
 			}
 			node[key] = item
 		}
@@ -543,7 +544,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 	case bool, float64, int, string, nil:
 		return value, nil
 	}
-	return nil, fmt.Errorf("Unsupported type: %T", value)
+	return nil, errors.New("Unsupported type: %T", value)
 }
 
 //
