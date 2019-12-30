@@ -2,7 +2,7 @@ module github.com/hedzr/cmdr-http2
 
 go 1.12
 
-replace github.com/hedzr/cmdr => ../cmdr
+// replace github.com/hedzr/cmdr => ../cmdr
 
 // replace github.com/hedzr/logex v0.0.0 => ../logex
 
@@ -12,7 +12,7 @@ replace github.com/hedzr/cmdr => ../cmdr
 
 require (
 	github.com/c-bata/go-prompt v0.2.3
-	github.com/hedzr/cmdr v1.6.15
+	github.com/hedzr/cmdr v1.6.17
 	github.com/hedzr/errors v1.1.15
 	github.com/hedzr/logex v1.1.3
 	github.com/mattn/go-runewidth v0.0.7 // indirect
