@@ -42,6 +42,10 @@ $ go run ./cli/ shell
 
 ![image](https://user-images.githubusercontent.com/12786150/71587009-11436500-2b57-11ea-890d-a60989a09248.png)
 
+#### Shell prompt mode
+
+the feature is powered by [c-bata/go-prompt](https://github.com/c-bata/go-prompt).
+
 
 
 
