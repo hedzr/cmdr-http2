@@ -33,3 +33,19 @@ $ go run ./cli/ shell
 # type <space> to get auto-completion tip
 # type sub-commands
 ```
+
+
+
+
+
+### cmdr-http2 shell prompt mode:
+
+![image](https://user-images.githubusercontent.com/12786150/71587009-11436500-2b57-11ea-890d-a60989a09248.png)
+
+
+
+
+
+# LICENSE
+
+MIT
