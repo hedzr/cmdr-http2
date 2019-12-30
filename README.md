@@ -11,10 +11,10 @@ cd cmdr-http2
 go mod download
 
 # run server
-go run cli/main.go server run &
+go run ./cli/ server run &
 
 # run client and make an request
-go run cli/main.go h2
+go run ./cli/ h2
 
 # or via curl
 curl -k https://localhost:5151/
@@ -22,5 +22,14 @@ curl -k https://localhost:5151/
 #
 # Build the binary
 #
-go build cli/main.go
+go build -o bin/cli ./cli/
+# or:
+make build
+
+# Shell prompt mode
+$ go run ./cli/ shell
+>>> --help
+>>> quit
+# type <space> to get auto-completion tip
+# type sub-commands
 ```
