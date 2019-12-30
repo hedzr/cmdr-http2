@@ -7,6 +7,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/cmdr-http2/cli/cmd/sample"
+	"github.com/hedzr/cmdr-http2/cli/cmd/shell"
+	"github.com/hedzr/cmdr-http2/cli/cmd/trace"
 	"github.com/hedzr/cmdr-http2/cli/server"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
@@ -35,7 +38,7 @@ func Entry() {
 		cmdr.WithWatchMainConfigFileToo(true),
 		cmdr.WithNoWatchConfigFiles(false),
 		cmdr.WithOptionMergeModifying(func(keyPath string, value, oldVal interface{}) {
-			logrus.Infof("%%-> -> %q: %v -> %v", keyPath, oldVal, value)
+			logrus.Debugf("%%-> -> %q: %v -> %v", keyPath, oldVal, value)
 			if strings.HasSuffix(keyPath, ".mqtt.server.stats.enabled") {
 				// mqttlib.FindServer().EnableSysStats(!vxconf.ToBool(value))
 			}
@@ -49,28 +52,13 @@ func Entry() {
 
 		cmdr.WithHelpTabStop(43),
 
-		cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
-			// the following statements show you how to attach an option to a sub-command
-			serverCmd := cmdr.FindSubCommandRecursive("server", nil)
-			serverStartCmd := cmdr.FindSubCommand("start", serverCmd)
-			cmdr.NewInt(5100).
-				Titles("vnc", "vnc-server").
-				Description("start as a vnc server (just a demo)", "").
-				Placeholder("PORT").
-				AttachTo(cmdr.NewCmdFrom(serverStartCmd))
-		}, nil),
-
-		cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
-			// attaches `--trace` to root command
-			cmdr.NewBool(false).
-				Titles("tr", "trace").
-				Description("enable trace mode for tcp/mqtt send/recv data dump", "").
-				AttachToRoot(root)
-		}, nil),
+		sample.WithSampleCmdrOption(),
+		trace.WithTraceEnable(true),
 
 		cmdr.WithUnknownOptionHandler(onUnknownOptionHandler),
 		cmdr.WithUnhandledErrorHandler(onUnhandleErrorHandler),
 
+		shell.WithShellModule(),
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}

@@ -4,7 +4,9 @@
 
 package main
 
-import "github.com/hedzr/cmdr-http2/cli/cmd"
+import (
+	"github.com/hedzr/cmdr-http2/cli/cmd"
+)
 
 func main() {
 	cmd.Entry()

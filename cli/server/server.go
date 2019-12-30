@@ -9,7 +9,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/hedzr/cmdr"
-	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/hedzr/cmdr/plugin/daemon/impl"
 	"github.com/sirupsen/logrus"
@@ -117,7 +116,7 @@ func (d *daemonImpl) OnStop(cmd *cmdr.Command, args []string) (err error) {
 }
 
 func (d *daemonImpl) domains(topDomains ...string) (domainList []string) {
-	for _, top := range vxconf.GetStringSliceR("server.domains", topDomains) {
+	for _, top := range cmdr.GetStringSliceR("server.domains", topDomains...) {
 		domainList = append(domainList, top)
 		for _, s := range []string{"aurora", "api", "home", "res"} {
 			domainList = append(domainList, fmt.Sprintf("%s.%s", s, top))
