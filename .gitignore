@@ -33,6 +33,12 @@ cover.out
 cover.html
 .tmp.*
 
+
+# lst
+lst.yaml
+lst.yml
+
+
 ### two executable files
 
 would_like
