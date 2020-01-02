@@ -7,10 +7,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/hedzr/cmdr"
-	"github.com/hedzr/cmdr-http2/cli/cmd/sample"
-	"github.com/hedzr/cmdr-http2/cli/cmd/shell"
-	"github.com/hedzr/cmdr-http2/cli/cmd/trace"
 	"github.com/hedzr/cmdr-http2/cli/server"
+	"github.com/hedzr/cmdr-http2/internal/sample"
+	"github.com/hedzr/cmdr-http2/internal/shell"
+	"github.com/hedzr/cmdr-http2/internal/trace"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
 	"runtime"
