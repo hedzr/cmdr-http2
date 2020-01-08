@@ -7,9 +7,7 @@ package vxconf
 import (
 	"flag"
 	"fmt"
-	"github.com/hedzr/cmdr"
 	"github.com/hedzr/errors"
-	"gopkg.in/yaml.v2"
 	"strconv"
 	"strings"
 	"syscall"
@@ -552,38 +550,3 @@ func normalizeValue(value interface{}) (interface{}, error) {
 //
 // ----------------------------------------------------------------
 //
-
-// IsProd return true if app is in production mode.
-func IsProd() bool {
-	switch cmdr.GetStringR("runmode", "devel") {
-	case "prod", "production":
-		return true
-	}
-	return false
-}
-
-// LoadSectionTo returns error while cannot yaml Marshal and Unmarshal
-func LoadSectionTo(sectionKeyPath string, configHolder interface{}) (err error) {
-	var b []byte
-
-	runMode := cmdr.GetStringR("runmode", "prod")
-
-	aKey := fmt.Sprintf("%s.%s", sectionKeyPath, runMode)
-	fObj := cmdr.GetMapR(aKey)
-	if fObj == nil {
-		fObj = cmdr.GetMapR(sectionKeyPath)
-	}
-
-	b, err = yaml.Marshal(fObj)
-	if err != nil {
-		return
-	}
-
-	err = yaml.Unmarshal(b, configHolder)
-	if err != nil {
-		return
-	}
-
-	// logrus.Debugf("configuration section got: %v", configHolder)
-	return
-}
