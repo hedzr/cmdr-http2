@@ -12,7 +12,7 @@ go 1.12
 
 require (
 	github.com/c-bata/go-prompt v0.2.3
-	github.com/hedzr/cmdr v1.6.18
+	github.com/hedzr/cmdr v1.6.20
 	github.com/hedzr/errors v1.1.18
 	github.com/hedzr/logex v1.1.5
 	github.com/mattn/go-runewidth v0.0.7 // indirect

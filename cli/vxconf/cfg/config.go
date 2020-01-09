@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/hedzr/errors"
-	"github.com/hedzr/njuone/cli/vxconf"
+	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"strconv"
 	"strings"
 	"syscall"
@@ -503,7 +503,7 @@ func Must(cfg *AppConfig, err error) *AppConfig {
 
 // normalizeValue normalizes a unmarshalled value. This is needed because
 // encoding/json doesn't support marshalling map[interface{}]interface{}.
-func normalizeValue(value interface{}) (interface{}, error) {
+func NormalizeValue(value interface{}) (interface{}, error) {
 	switch value := value.(type) {
 	case map[interface{}]interface{}:
 		node := make(map[string]interface{}, len(value))
@@ -512,7 +512,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 			if !ok {
 				return nil, errors.New("Unsupported map key: %#v", k)
 			}
-			item, err := normalizeValue(v)
+			item, err := NormalizeValue(v)
 			if err != nil {
 				return nil, errors.New("Unsupported map value: %#v", v)
 			}
@@ -522,7 +522,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 	case map[string]interface{}:
 		node := make(map[string]interface{}, len(value))
 		for key, v := range value {
-			item, err := normalizeValue(v)
+			item, err := NormalizeValue(v)
 			if err != nil {
 				return nil, errors.New("Unsupported map value: %#v", v)
 			}
@@ -532,7 +532,7 @@ func normalizeValue(value interface{}) (interface{}, error) {
 	case []interface{}:
 		node := make([]interface{}, len(value))
 		for key, v := range value {
-			item, err := normalizeValue(v)
+			item, err := NormalizeValue(v)
 			if err != nil {
 				return nil, errors.New("Unsupported list item: %#v", v)
 			}
