@@ -13,6 +13,7 @@ import (
 	"strings"
 )
 
+// WithShellModule adds `shell` sub-command to cmdr system
 func WithShellModule() cmdr.ExecOption {
 	return func(w *cmdr.ExecWorker) {
 		// daemonImpl = daemonImplX
@@ -24,10 +25,10 @@ func WithShellModule() cmdr.ExecOption {
 			// } else {
 			// 	root.SubCommands = append(root.SubCommands, DaemonServerCommand)
 			// }
-			// 
+			//
 			// // prefix = strings.Join(append(cmdr.RxxtPrefix, "server"), ".")
 			// // prefix = "server"
-			// 
+			//
 			// attachPreAction(root, preAction)
 			// attachPostAction(root, postAction)
 
@@ -123,6 +124,7 @@ func buildSuggestsFor(text string, command *cmdr.Command) (ret []prompt.Suggest)
 	return
 }
 
+// ExecuteAndGetResult executes an command line string `s` and capture its outputs.
 func ExecuteAndGetResult(s string) string {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -231,6 +233,7 @@ func run4() {
 	p.Run()
 }
 
+// LivePrefixState is a struct for auto-completion
 var LivePrefixState struct {
 	LivePrefix string
 	IsEnable   bool

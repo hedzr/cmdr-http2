@@ -4,6 +4,7 @@ package trace
 
 import "github.com/hedzr/cmdr"
 
+// WithTraceEnable enables a minimal `trace` option at cmdr Root Command Level.
 func WithTraceEnable(enabled bool) cmdr.ExecOption {
 	return func(w *cmdr.ExecWorker) {
 		// daemonImpl = daemonImplX
@@ -15,9 +16,10 @@ func WithTraceEnable(enabled bool) cmdr.ExecOption {
 				cmdr.NewBool(false).
 					Titles("tr", "trace").
 					Description("enable trace mode for tcp/mqtt send/recv data dump", "").
+					Group(cmdr.SysMgmtGroup).
 					AttachToRoot(root)
 			}
-			
+
 		})
 	}
 }

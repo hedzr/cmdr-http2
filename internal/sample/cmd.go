@@ -4,6 +4,7 @@ package sample
 
 import "github.com/hedzr/cmdr"
 
+// WithSampleCmdrOption show the example howto modify cmdr daemon plugin `server` `start` sub-command at an appropriate time.
 func WithSampleCmdrOption() cmdr.ExecOption {
 	return func(w *cmdr.ExecWorker) {
 		// daemonImpl = daemonImplX
