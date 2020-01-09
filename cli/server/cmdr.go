@@ -35,6 +35,7 @@ func WithCmdrHook() cmdr.ExecOption {
 
 		// app.server.port
 		if cx := root.Command.FindSubCommand("server"); cx != nil {
+			cx.Description = "daemon service: HTTP2 server"
 			// logrus.Debugf("`server` command found")
 			opt := cmdr.NewCmdFrom(cx)
 			if flg := cx.FindFlag("port"); flg != nil {
