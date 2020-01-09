@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/acme/autocert"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -66,20 +67,20 @@ func newDaemon() daemon.Daemon {
 //
 //
 
-func (d *daemonImpl) OnInstall(cxt *impl.Context, cmd *cmdr.Command, args []string) (err error) {
+func (d *daemonImpl) OnInstall(ctx *impl.Context, cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnInstall", cmd.GetRoot().AppName)
 	return
 }
 
-func (d *daemonImpl) OnUninstall(cxt *impl.Context, cmd *cmdr.Command, args []string) (err error) {
+func (d *daemonImpl) OnUninstall(ctx *impl.Context, cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnUninstall", cmd.GetRoot().AppName)
 	return
 	// panic("implement me")
 }
 
-func (d *daemonImpl) OnStatus(cxt *impl.Context, cmd *cmdr.Command, p *os.Process) (err error) {
+func (d *daemonImpl) OnStatus(ctx *impl.Context, cmd *cmdr.Command, p *os.Process) (err error) {
 	fmt.Printf("%s v%v\n", cmd.GetRoot().AppName, cmd.GetRoot().Version)
-	fmt.Printf("PID=%v\nLOG=%v\n", cxt.PidFileName, cxt.LogFileName)
+	fmt.Printf("PID=%v\nLOG=%v\n", ctx.PidFileName, ctx.LogFileName)
 	return
 }
 
@@ -89,6 +90,11 @@ func (d *daemonImpl) OnReload() {
 
 func (d *daemonImpl) OnStop(cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debugf("%s daemon OnStop", cmd.GetRoot().AppName)
+	return
+}
+
+func (d *daemonImpl) OnHotReload(ctx *impl.Context) (err error) {
+	logrus.Debugf("%s daemon OnHotReload, pid = %v, ppid = %v, ctx = %v", d.appTag, os.Getpid(), os.Getppid(), ctx)
 	return
 }
 
@@ -151,7 +157,7 @@ func (d *daemonImpl) buildRoutes(mux *http.ServeMux) (err error) {
 	return
 }
 
-func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan struct{}) (err error) {
+func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan struct{}, listener net.Listener) (err error) {
 	d.appTag = cmd.GetRoot().AppName
 	logrus.Debugf("%s daemon OnRun, pid = %v, ppid = %v", d.appTag, os.Getpid(), os.Getppid())
 
@@ -195,7 +201,10 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 		if srv.TLSConfig.GetCertificate == nil {
 			logrus.Printf("Serving on https://0.0.0.0:%d ...", port)
 			if cmdr.FileExists("ci/certs/server.cert") && cmdr.FileExists("ci/certs/server.key") {
-				logrus.Fatal(srv.ListenAndServeTLS("ci/certs/server.cert", "ci/certs/server.key"))
+				if err = d.serve(srv, listener, "ci/certs/server.cert", "ci/certs/server.key"); err != http.ErrServerClosed {
+					logrus.Fatal(err)
+				}
+				logrus.Println("end")
 			} else {
 				logrus.Fatalf(`ci/certs/server.{cert,key} NOT FOUND under '%s'. You might generate its at command line:
 
@@ -207,12 +216,42 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 			}
 		} else {
 			logrus.Printf("Serving on https://0.0.0.0:%d with autocert...", port)
-			logrus.Fatal(srv.ListenAndServeTLS("", ""))
+			if err = d.serve(srv, listener, "", ""); err != http.ErrServerClosed {
+				logrus.Fatal(err)
+			}
+			logrus.Println("end")
 		}
 	}()
 
 	// go worker(stopCh, doneCh)
 	return
+}
+
+func (d *daemonImpl) serve(srv *http.Server, listener net.Listener, certFile, keyFile string) (err error) {
+	// if srv.shuttingDown() {
+	// 	return http.ErrServerClosed
+	// }
+
+	addr := srv.Addr
+	if addr == "" {
+		addr = ":https"
+	}
+
+	if listener == nil {
+		listener, err = net.Listen("tcp", addr)
+		if err != nil {
+			return err
+		}
+	}
+
+	defer func() {
+		h2listener.Close()
+		logrus.Printf("h2listener closed, pid=%v", os.Getpid())
+	}()
+
+	h2listener = listener
+
+	return srv.ServeTLS(h2listener, certFile, keyFile)
 }
 
 func (d *daemonImpl) worker(stopCh, doneCh chan struct{}) {

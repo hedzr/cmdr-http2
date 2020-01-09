@@ -6,6 +6,7 @@ import (
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
+	"net"
 )
 
 // AttachToCmdr adds command-line commands and options to cmdr system
@@ -26,7 +27,10 @@ func AttachToCmdr(root cmdr.OptCmd) {
 
 // WithCmdrDaemonSupport adds daemon support to cmdr system
 func WithCmdrDaemonSupport() cmdr.ExecOption {
-	return daemon.WithDaemon(newDaemon(), modifier, onAppStart, onAppExit)
+	return daemon.WithDaemon(newDaemon(),
+		modifier, onAppStart, onAppExit,
+		daemon.WithOnGetListener(getOnGetListener),
+	)
 }
 
 // WithCmdrHook adds hooking to cmdr system so that we can modify daemon `server` command at an appropriate time.
@@ -82,3 +86,12 @@ func onServerPreStart(cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debug("onServerPreStart")
 	return
 }
+
+func getOnGetListener() net.Listener {
+	// l := h2listener
+	// h2listener = nil
+	// return l
+	return h2listener
+}
+
+var h2listener net.Listener
