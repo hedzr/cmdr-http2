@@ -4,12 +4,14 @@ package vxconf
 
 import (
 	"encoding/json"
+	"github.com/hedzr/njuone/cli/vxconf/cfg"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
-func JsonToString(in interface{}, pretty bool) string {
+// JSONToString convert json object `in` to json text string
+func JSONToString(in interface{}, pretty bool) string {
 	var b []byte
 	var err error
 	if pretty {
@@ -20,11 +22,11 @@ func JsonToString(in interface{}, pretty bool) string {
 	if err != nil {
 		logrus.Errorf("json decode string failed: %v", err)
 		return "<error-json-object>"
-	} else {
-		return string(b)
 	}
+	return string(b)
 }
 
+// YamlToString convert yaml object `in` to yaml text string
 func YamlToString(in interface{}, pretty bool) string {
 	var b []byte
 	var err error
@@ -36,42 +38,41 @@ func YamlToString(in interface{}, pretty bool) string {
 	if err != nil {
 		logrus.Errorf("yaml decode string failed: %v", err)
 		return "<error-yaml-object>"
-	} else {
-		return string(b)
 	}
+	return string(b)
 }
 
 // JSON -----------------------------------------------------------------------
 
-// ParseJson reads a JSON configuration from the given string.
-func ParseJson(cfg string) (*AppConfig, error) {
-	return parseJson([]byte(cfg))
+// ParseJSON reads a JSON configuration from the given string.
+func ParseJSON(cfg string) (*cfg.AppConfig, error) {
+	return parseJSON([]byte(cfg))
 }
 
-// ParseJsonFile reads a JSON configuration from the given filename.
-func ParseJsonFile(filename string) (*AppConfig, error) {
+// ParseJSONFile reads a JSON configuration from the given filename.
+func ParseJSONFile(filename string) (*cfg.AppConfig, error) {
 	cfg, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return parseJson(cfg)
+	return parseJSON(cfg)
 }
 
-// parseJson performs the real JSON parsing.
-func parseJson(cfg []byte) (*AppConfig, error) {
+// parseJSON performs the real JSON parsing.
+func parseJSON(cfg []byte) (*cfg.AppConfig, error) {
 	var out interface{}
 	var err error
 	if err = json.Unmarshal(cfg, &out); err != nil {
 		return nil, err
 	}
-	if out, err = normalizeValue(out); err != nil {
+	if out, err = cfg.normalizeValue(out); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Root: out}, nil
+	return &cfg.AppConfig{Root: out}, nil
 }
 
-// RenderJson renders a JSON configuration.
-func RenderJson(cfg interface{}) (string, error) {
+// RenderJSON renders a JSON configuration.
+func RenderJSON(cfg interface{}) (string, error) {
 	b, err := json.Marshal(cfg)
 	if err != nil {
 		return "", err
@@ -82,12 +83,12 @@ func RenderJson(cfg interface{}) (string, error) {
 // YAML -----------------------------------------------------------------------
 
 // ParseYaml reads a YAML configuration from the given string.
-func ParseYaml(cfg string) (*AppConfig, error) {
+func ParseYaml(cfg string) (*cfg.AppConfig, error) {
 	return parseYaml([]byte(cfg))
 }
 
 // ParseYamlFile reads a YAML configuration from the given filename.
-func ParseYamlFile(filename string) (*AppConfig, error) {
+func ParseYamlFile(filename string) (*cfg.AppConfig, error) {
 	cfg, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -96,16 +97,16 @@ func ParseYamlFile(filename string) (*AppConfig, error) {
 }
 
 // parseYaml performs the real YAML parsing.
-func parseYaml(cfg []byte) (*AppConfig, error) {
+func parseYaml(cfg []byte) (*cfg.AppConfig, error) {
 	var out interface{}
 	var err error
 	if err = yaml.Unmarshal(cfg, &out); err != nil {
 		return nil, err
 	}
-	if out, err = normalizeValue(out); err != nil {
+	if out, err = cfg.normalizeValue(out); err != nil {
 		return nil, err
 	}
-	return &AppConfig{Root: out}, nil
+	return &cfg.AppConfig{Root: out}, nil
 }
 
 // RenderYaml renders a YAML configuration.
