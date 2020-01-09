@@ -34,6 +34,8 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Examples(examples)
 	rootCmd = root.RootCommand()
 
+	server.AttachToCmdr(root)
+	
 	// xy-print
 
 	root.NewSubCommand().
@@ -79,17 +81,6 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Group("").
 		Placeholder("MESG").
 		ExternalTool(cmdr.ExternalToolEditor)
-
-	// http 2 client
-
-	root.NewSubCommand().
-		Titles("h2", "h2-test").
-		Description("test http 2 client", "test http 2 client,\nverbose long descriptions here.").
-		Group("Test").
-		Action(func(cmd *cmdr.Command, args []string) (err error) {
-			server.RunClient()
-			return
-		})
 
 	// kv
 

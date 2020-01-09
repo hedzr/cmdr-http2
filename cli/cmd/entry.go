@@ -8,10 +8,8 @@ import (
 	"fmt"
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/server"
-	"github.com/hedzr/cmdr-http2/internal/sample"
 	"github.com/hedzr/cmdr-http2/internal/shell"
 	"github.com/hedzr/cmdr-http2/internal/trace"
-	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
 	"runtime"
 	"strings"
@@ -28,9 +26,10 @@ func Entry() {
 		// To disable internal commands and flags, uncomment the following codes
 		// cmdr.WithBuiltinCommands(false, false, false, false, false),
 
-		daemon.WithDaemon(server.NewDaemon(), modifier, onAppStart, onAppExit),
-
-		server.WithHook(),
+		// daemon.WithDaemon(server.NewDaemon(), modifier, onAppStart, onAppExit),
+		// server.WithHook(),
+		server.WithCmdrDaemonSupport(),
+		server.WithCmdrHook(),
 
 		cmdr.WithLogex(logrus.DebugLevel),
 		cmdr.WithLogexPrefix("logger"),
@@ -52,7 +51,7 @@ func Entry() {
 
 		cmdr.WithHelpTabStop(43),
 
-		sample.WithSampleCmdrOption(),
+		// sample.WithSampleCmdrOption(),
 		trace.WithTraceEnable(true),
 
 		cmdr.WithUnknownOptionHandler(onUnknownOptionHandler),
