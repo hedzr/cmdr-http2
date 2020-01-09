@@ -35,6 +35,23 @@ $ go run ./cli/ shell
 ```
 
 
+### plugins for cmdr system
+
+#### sample
+
+sample plugin give a example to howto modify cmdr daemon plugin `server` `start` command at an appropriate time.
+
+
+
+#### trace
+
+trace plugin adds a `trace` option to cmdr system.
+
+
+
+#### shell
+
+enable shell prompt mode inside app.
 
 
 
