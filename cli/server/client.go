@@ -16,7 +16,7 @@ import (
 
 const url = "https://localhost:5151"
 
-func RunClient() {
+func runClient() {
 	if err := client1(); err != nil {
 		logrus.Fatal("RunClient failed.", err)
 	}

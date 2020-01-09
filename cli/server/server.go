@@ -36,32 +36,9 @@ type (
 //
 //
 
-// NewDaemon creates an `daemon.Daemon` object
-func NewDaemon() daemon.Daemon {
+// newDaemon creates an `daemon.Daemon` object
+func newDaemon() daemon.Daemon {
 	return &daemonImpl{}
-}
-
-func WithHook() cmdr.ExecOption {
-	return cmdr.WithXrefBuildingHooks(func(root *cmdr.RootCommand, args []string) {
-
-		// app.server.port
-		if cx := root.Command.FindSubCommand("server"); cx != nil {
-			// logrus.Debugf("`server` command found")
-			opt := cmdr.NewCmdFrom(cx)
-			if flg := cx.FindFlag("port"); flg != nil {
-				flg.DefaultValue = defaultPort
-
-			} else {
-				opt.NewFlagV(defaultPort).
-					Titles("p", "port").
-					Description("the port to listen.", "").
-					Group("").
-					Placeholder("PORT")
-			}
-		}
-	}, func(root *cmdr.RootCommand, args []string) {
-		logrus.Debugf("cmd: root=%+v, args: %v", root, args)
-	})
 }
 
 // func OnBuildCmd(root *cmdr.RootCommand) {
