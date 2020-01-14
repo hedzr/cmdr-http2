@@ -5,7 +5,7 @@ package vxconf
 import (
 	"fmt"
 	"github.com/hedzr/cmdr"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // RunMode return running mode string: prod, devel, staging, ...
