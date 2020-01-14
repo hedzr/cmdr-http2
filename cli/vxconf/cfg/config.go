@@ -5,8 +5,8 @@ package cfg
 import (
 	"flag"
 	"fmt"
-	"github.com/hedzr/errors"
 	"github.com/hedzr/cmdr-http2/cli/vxconf"
+	"gopkg.in/hedzr/errors.v2"
 	"strconv"
 	"strings"
 	"syscall"

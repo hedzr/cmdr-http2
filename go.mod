@@ -13,7 +13,6 @@ go 1.12
 require (
 	github.com/c-bata/go-prompt v0.2.3
 	github.com/hedzr/cmdr v1.6.20
-	github.com/hedzr/errors v1.1.18
 	github.com/hedzr/logex v1.1.5
 	github.com/mattn/go-runewidth v0.0.7 // indirect
 	github.com/mattn/go-tty v0.0.3 // indirect
@@ -21,5 +20,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
 	golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
+	gopkg.in/hedzr/errors.v2 v2.0.8
 	gopkg.in/yaml.v2 v2.2.2
 )
