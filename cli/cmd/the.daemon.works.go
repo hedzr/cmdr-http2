@@ -1,13 +1,9 @@
-/*
- * Copyright © 2019 Hedzr Yeh.
- */
+// Copyright © 2020 Hedzr Yeh.
 
 package cmd
 
 import (
 	"fmt"
-	"github.com/hedzr/cmdr"
-	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
 )
@@ -19,35 +15,6 @@ var clear = fmt.Sprintf("%c[%dA%c[2K", ESC, 1, ESC)
 
 func clearLines(lineCount int) {
 	_, _ = fmt.Fprint(os.Stdout, strings.Repeat(clear, lineCount))
-}
-
-func modifier(daemonServerCommands *cmdr.Command) *cmdr.Command {
-	if startCmd := daemonServerCommands.FindSubCommand("start"); startCmd != nil {
-		startCmd.PreAction = onServerPreStart
-		startCmd.PostAction = onServerPostStop
-	}
-
-	return daemonServerCommands
-}
-
-func onAppStart(cmd *cmdr.Command, args []string) (err error) {
-	logrus.Debug("onAppStart")
-	return
-}
-
-func onAppExit(cmd *cmdr.Command, args []string) {
-	logrus.Debug("onAppExit")
-}
-
-func onServerPostStop(cmd *cmdr.Command, args []string) {
-	logrus.Debug("onServerPostStop")
-}
-
-// onServerPreStart is earlier than onAppStart.
-func onServerPreStart(cmd *cmdr.Command, args []string) (err error) {
-	// earlierInitLogger() // deprecated by cmdr.WithLogex()
-	logrus.Debug("onServerPreStart")
-	return
 }
 
 // earlierInitLogger is deprecated by cmdr.WithLogex()

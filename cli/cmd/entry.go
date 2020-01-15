@@ -1,6 +1,4 @@
-/*
- * Copyright © 2019 Hedzr Yeh.
- */
+// Copyright © 2020 Hedzr Yeh.
 
 package cmd
 
@@ -27,7 +25,6 @@ func Entry() {
 		// cmdr.WithBuiltinCommands(false, false, false, false, false),
 
 		// daemon.WithDaemon(server.NewDaemon(), modifier, onAppStart, onAppExit),
-		// server.WithHook(),
 		server.WithCmdrDaemonSupport(),
 		server.WithCmdrHook(),
 
@@ -58,6 +55,7 @@ func Entry() {
 		cmdr.WithUnhandledErrorHandler(onUnhandleErrorHandler),
 
 		shell.WithShellModule(),
+
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}
@@ -68,10 +66,16 @@ func onUnknownOptionHandler(isFlag bool, title string, cmd *cmdr.Command, args [
 	return true
 }
 
+// to make the h2 server recoverable
 func onUnhandleErrorHandler(err interface{}) {
 	// debug.PrintStack()
 	// pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
-	dumpStacks()
+	if e, ok := err.(error); ok {
+		logrus.Errorf("%+v", e)
+	} else {
+		logrus.Errorf("%+v", err)
+		dumpStacks()
+	}
 }
 
 func dumpStacks() {

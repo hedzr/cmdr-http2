@@ -1,4 +1,4 @@
-// Copyright © 2019 Hedzr Yeh.
+// Copyright © 2020 Hedzr Yeh.
 
 package cmd_test
 
@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestX1(t *testing.T){
+func TestX1(t *testing.T) {
 	defer logex.CaptureLog(t).Release()
-	
+
 	//
 }
