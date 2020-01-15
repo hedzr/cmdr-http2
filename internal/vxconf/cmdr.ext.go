@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hedzr/cmdr"
 	"gopkg.in/yaml.v3"
+	"strings"
 )
 
 // RunMode return running mode string: prod, devel, staging, ...
@@ -63,5 +64,30 @@ func LoadSectionTo(runMode, sectionKeyPath string, configHolder interface{}) (er
 	}
 
 	// logrus.Debugf("configuration section got: %v", configHolder)
+	return
+}
+
+// ToBool parses the string to bool type.
+// these strings will be scanned as true: "1", "y", "t", "yes", "true", "ok", "on"
+func ToBool(s interface{}) (ret bool) {
+	switch v := s.(type) {
+	case bool:
+		ret = v
+	case string:
+		ret = StringToBool(v)
+	default:
+		vs := fmt.Sprint(s)
+		ret = StringToBool(vs)
+	}
+	return
+}
+
+// StringToBool parses the string to bool type.
+// these strings will be scanned as true: "1", "y", "t", "yes", "true", "ok", "on"
+func StringToBool(s string) (ret bool) {
+	switch strings.ToLower(s) {
+	case "1", "y", "t", "yes", "true", "ok", "on":
+		ret = true
+	}
 	return
 }

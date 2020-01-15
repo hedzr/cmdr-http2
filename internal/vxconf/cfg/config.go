@@ -5,7 +5,6 @@ package cfg
 import (
 	"flag"
 	"fmt"
-	"github.com/hedzr/cmdr-http2/cli/vxconf"
 	"gopkg.in/hedzr/errors.v2"
 	"strconv"
 	"strings"
@@ -329,10 +328,10 @@ func (c *AppConfig) Copy(dottedPath ...string) (*AppConfig, error) {
 		}
 	}
 
-	if root, err = vxconf.RenderYaml(cfg.Root); err != nil {
+	if root, err = RenderYaml(cfg.Root); err != nil {
 		return nil, err
 	}
-	return vxconf.ParseYaml(root)
+	return ParseYaml(root)
 }
 
 // Extend returns extended copy of current config with applied
