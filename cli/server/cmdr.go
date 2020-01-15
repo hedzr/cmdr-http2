@@ -4,9 +4,11 @@ package server
 
 import (
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/cmdr-http2/cli/server/tls"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
 	"net"
+	"time"
 )
 
 // AttachToCmdr adds command-line commands and options to cmdr system
@@ -41,17 +43,41 @@ func WithCmdrHook() cmdr.ExecOption {
 		if cx := root.Command.FindSubCommand("server"); cx != nil {
 			cx.Description = "daemon service: HTTP2 server"
 			// logrus.Debugf("`server` command found")
+
 			opt := cmdr.NewCmdFrom(cx)
+
 			if flg := cx.FindFlag("port"); flg != nil {
 				flg.DefaultValue = defaultPort
 
 			} else {
-				opt.NewFlagV(defaultPort).
-					Titles("p", "port").
+				opt.NewFlagV(defaultPort, "port", "p").
 					Description("the port to listen.", "").
 					Group("").
 					Placeholder("PORT")
 			}
+
+			certOptCmd := opt.NewSubCommand("certs", "ca").
+				Description("certificates operations...", "").
+				Group("CA")
+			certCreateCmd := certOptCmd.NewSubCommand("create", "c").
+				Description("create CA, server and client certificates").
+				Action(tls.CertCreate)
+			certCreateCmd.NewFlagV([]string{}, "host", "h").
+				Description("Comma-separated hostnames and IPs to generate a certificate for")
+			certCreateCmd.NewFlagV("", "start-date", "f", "from", "valid-from").
+				Description("Creation date formatted as Jan 1 15:04:05 2011 (default now)")
+			certCreateCmd.NewFlagV(365*10*24*time.Hour, "valid-for", "duration", "d").
+				Description("Duration that certificate is valid for")
+
+			// caCmd := certOptCmd.NewSubCommand("ca").
+			// 	Description("certification tool (such as create-ca, create-cert, ...)", "certification tool (such as create-ca, create-cert, ...          )\nverbose long descriptions here.").
+			// 	Group("CA")
+			// 
+			// caCreateCmd := caCmd.NewSubCommand("create", "c").
+			// 	Description("create NEW CA certification", "").
+			// 	Group("Tool").
+			// 	Action(tls.CaCreate)
+
 		}
 	}, func(root *cmdr.RootCommand, args []string) {
 		logrus.Debugf("cmd: root=%+v, args: %v", root, args)
