@@ -402,6 +402,11 @@ func (d *daemonImpl) buildGinRoutes(mux *gin.Engine) (err error) {
 	mux.GET("/hello", helloGinHandler)
 
 	mux.GET("/s/*action", echoGinHandler)
+
+	// mux.Static("/assets", "./assets")
+	mux.StaticFS("/public", http.Dir("./public"))
+	mux.StaticFile("/favicon.ico", "./resources/favicon.ico")
+	
 	return
 }
 
