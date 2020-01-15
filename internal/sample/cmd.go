@@ -1,4 +1,4 @@
-// Copyright © 2019 Hedzr Yeh.
+// Copyright © 2020 Hedzr Yeh.
 
 package sample
 
@@ -19,7 +19,7 @@ func WithSampleCmdrOption() cmdr.ExecOption {
 			if serverStartCmd != nil {
 				cmdr.NewInt(5100).
 					Titles("vnc", "vnc-server").
-					Description("start as a vnc server (just a demo)", "").
+					Description("start as a vnc server (just a demo)").
 					Placeholder("PORT").
 					AttachTo(cmdr.NewCmdFrom(serverStartCmd))
 			}
