@@ -205,7 +205,12 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 
 	switch d.Type {
 	case typeGin:
-		d.router = gin.Default()
+		// d.router = gin.Default()
+		gin.ForceConsoleColor()
+		d.router = gin.New()
+		d.router.Use(gin.Logger())
+		d.router.Use(gin.Recovery())
+		// d.router.GET("/benchmark", MyBenchLogger(), benchEndpoint)
 		err = d.buildGinRoutes(d.router)
 
 	case typeIris:
