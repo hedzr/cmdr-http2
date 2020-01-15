@@ -55,7 +55,6 @@ func Entry() {
 		cmdr.WithUnhandledErrorHandler(onUnhandleErrorHandler),
 
 		shell.WithShellModule(),
-
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}

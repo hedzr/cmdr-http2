@@ -500,7 +500,7 @@ func Must(cfg *AppConfig, err error) *AppConfig {
 	return cfg
 }
 
-// normalizeValue normalizes a unmarshalled value. This is needed because
+// NormalizeValue normalizes a unmarshalled value. This is needed because
 // encoding/json doesn't support marshalling map[interface{}]interface{}.
 func NormalizeValue(value interface{}) (interface{}, error) {
 	switch value := value.(type) {

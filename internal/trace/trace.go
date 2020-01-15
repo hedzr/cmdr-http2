@@ -12,6 +12,7 @@ var tracing struct {
 	enabled int32
 }
 
+// Start starts the trace subsystem
 func Start() (err error) {
 	if atomic.CompareAndSwapInt32(&tracing.enabled, 0, 1) {
 		tracing.Lock()
@@ -24,6 +25,7 @@ func Start() (err error) {
 	return
 }
 
+// Stop stops the trace subsystem
 func Stop() {
 	if atomic.CompareAndSwapInt32(&tracing.enabled, 1, 0) {
 		tracing.Lock()
@@ -34,6 +36,7 @@ func Stop() {
 	}
 }
 
+// IsEnabled return the state of this trace subsystem
 func IsEnabled() bool {
 	enabled := atomic.LoadInt32(&tracing.enabled)
 	return enabled == 1

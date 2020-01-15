@@ -33,7 +33,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	rootCmd = root.RootCommand()
 
 	server.AttachToCmdr(root)
-	
+
 	// xy-print
 
 	root.NewSubCommand().

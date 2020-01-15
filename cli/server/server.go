@@ -33,9 +33,9 @@ import (
 const (
 	defaultPort = 1379
 
-	TypeDefault muxType = iota
-	TypeGin
-	TypeIris
+	typeDefault muxType = iota
+	typeGin
+	typeIris
 )
 
 type (
@@ -57,7 +57,7 @@ type (
 
 // newDaemon creates an `daemon.Daemon` object
 func newDaemon() daemon.Daemon {
-	return &daemonImpl{Type: TypeIris,}
+	return &daemonImpl{Type: typeIris}
 }
 
 // func OnBuildCmd(root *cmdr.RootCommand) {
@@ -126,11 +126,11 @@ func (d *daemonImpl) domains() (domainList []string) {
 	return
 }
 
-func (d *daemonImpl) checkAndEnableAutoCert(config *tls2.CmdrTlsConfig) (tlsConfig *tls.Config) {
+func (d *daemonImpl) checkAndEnableAutoCert(config *tls2.CmdrTLSConfig) (tlsConfig *tls.Config) {
 	tlsConfig = &tls.Config{}
 
 	if config.IsServerCertValid() {
-		tlsConfig = config.ToServerTlsConfig()
+		tlsConfig = config.ToServerTLSConfig()
 	}
 
 	if cmdr.GetBoolR("server.autocert.enabled") {
@@ -175,9 +175,9 @@ func (d *daemonImpl) enableGracefulShutdown(srv *http.Server, stopCh, doneCh cha
 
 func (d *daemonImpl) getHandler() http.Handler {
 	switch d.Type {
-	case TypeGin:
+	case typeGin:
 		return d.router
-	case TypeIris:
+	case typeIris:
 		return d.irisApp
 	default:
 		return d.mux
@@ -192,7 +192,7 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 
 	// Tweak configuration values here.
 	var (
-		config    = tls2.NewCmdrTlsConfig("cmdr-http2.server.tls", "server.start")
+		config    = tls2.NewCmdrTLSConfig("cmdr-http2.server.tls", "server.start")
 		tlsConfig = d.checkAndEnableAutoCert(config)
 	)
 
@@ -204,11 +204,11 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 	}
 
 	switch d.Type {
-	case TypeGin:
+	case typeGin:
 		d.router = gin.Default()
 		err = d.buildGinRoutes(d.router)
 
-	case TypeIris:
+	case typeIris:
 		d.irisApp = iris.New()
 		d.irisApp.Logger().SetLevel("debug")
 		d.irisApp.Use(recover.New())
@@ -262,11 +262,11 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 			logrus.Println("end")
 			// 		} else {
 			// 			logrus.Fatalf(`ci/certs/server.{cert,key} NOT FOUND under '%s'. You might generate its at command line:
-			// 
+			//
 			// [ -d ci/certs ] || mkdir -p ci/certs
 			// openssl genrsa -out ci/certs/server.key 2048
 			// openssl req -new -x509 -key ci/certs/server.key -out ci/certs/server.cert -days 3650 -subj /CN=localhost
-			// 
+			//
 			// 			`, cmdr.GetCurrentDir())
 			// 		}
 		} else {
@@ -307,7 +307,7 @@ func (d *daemonImpl) serve(srv *http.Server, listener net.Listener, certFile, ke
 	h2listener = listener
 
 	switch d.Type {
-	case TypeIris:
+	case typeIris:
 		return d.irisApp.Run(iris.Raw(func() error {
 			su := d.irisApp.NewHost(srv)
 			if netutil.IsTLS(su.Server) {
@@ -351,7 +351,6 @@ LOOP:
 // https://revel.github.io/
 // https://github.com/revel/revel
 
-
 func (d *daemonImpl) buildIrisRoutes(app *iris.Application) (err error) {
 	// https://iris-go.com/start/
 	// https://github.com/kataras/iris
@@ -389,7 +388,7 @@ func (d *daemonImpl) buildGinRoutes(mux *gin.Engine) (err error) {
 	// https://github.com/gin-contrib
 	//
 	// https://www.mindinventory.com/blog/top-web-frameworks-for-development-golang/
-	
+
 	mux.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",

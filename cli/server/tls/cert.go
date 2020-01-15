@@ -21,11 +21,12 @@ import (
 	"time"
 )
 
+// CaCreate is a temp entry but never used now
 func CaCreate(cmd *cmdr.Command, args []string) (err error) {
 	return
 }
 
-var pkixName pkix.Name = pkix.Name{
+var pkixName = pkix.Name{
 	Country:            []string{"CN"},
 	Locality:           []string{"CQ"},
 	Province:           []string{"Chongqing"},
@@ -55,6 +56,7 @@ const (
 	clientCommonName = "demo1"
 )
 
+// CertCreate creates Root CA, Server and Client certificates in a nutshell
 func CertCreate(cmd *cmdr.Command, args []string) (err error) {
 	var prefix = "server.certs"
 

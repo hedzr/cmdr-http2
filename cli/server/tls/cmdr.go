@@ -13,43 +13,48 @@ import (
 	"path"
 )
 
-func NewCmdrTlsConfig(prefixInConfigFile, prefixInCommandline string) *CmdrTlsConfig {
-	s := &CmdrTlsConfig{}
+// NewCmdrTLSConfig builds the *CmdrTLSConfig object from cmdr config file and cmdr command-line arguments
+func NewCmdrTLSConfig(prefixInConfigFile, prefixInCommandline string) *CmdrTLSConfig {
+	s := &CmdrTLSConfig{}
 	if len(prefixInConfigFile) > 0 {
-		s.InitTlsConfigFromConfigFile(prefixInConfigFile)
+		s.InitTLSConfigFromConfigFile(prefixInConfigFile)
 	}
 	if len(prefixInCommandline) > 0 {
-		s.InitTlsConfigFromCommandline(prefixInCommandline)
+		s.InitTLSConfigFromCommandline(prefixInCommandline)
 	}
 	return s
 }
 
-// CmdrTlsConfig wraps the certificates.
+// CmdrTLSConfig wraps the certificates.
 // For server-side, the `Cert` field must be a bundle of server certificates with all root CAs chain.
 // For server-side, the `Cacert` is optional for extra client CA's.
-type CmdrTlsConfig struct {
+type CmdrTLSConfig struct {
 	Enabled       bool
 	Cacert        string // server-side: optional server's CA;   client-side: client's CA
 	ServerCert    string //                                      client-side: the server's cert
 	Cert          string // server-side: server's cert bundle;   client-side: client's cert
 	Key           string // server-side: server's key;           client-side: client's key
 	ClientAuth    bool
-	MinTlsVersion uint16
+	MinTLSVersion uint16
 }
 
-func (s *CmdrTlsConfig) IsServerCertValid() bool {
+// IsServerCertValid checks the server or CA cert are present.
+func (s *CmdrTLSConfig) IsServerCertValid() bool {
 	return s.ServerCert != "" || s.Cacert != ""
 }
 
-func (s *CmdrTlsConfig) IsCertValid() bool {
+// IsCertValid checks the cert and privateKey are present
+func (s *CmdrTLSConfig) IsCertValid() bool {
 	return s.Cert != "" && s.Key != ""
 }
 
-func (s *CmdrTlsConfig) IsClientAuthValid() bool {
+// IsClientAuthEnabled checks if the client-side authentication is enabled
+func (s *CmdrTLSConfig) IsClientAuthEnabled() bool {
 	return s.ClientAuth && s.Cert != "" && s.Key != ""
 }
 
-func (s *CmdrTlsConfig) InitTlsConfigFromCommandline(prefix string) {
+// InitTLSConfigFromCommandline loads the parsed command-line arguments to *CmdrTLSConfig
+func (s *CmdrTLSConfig) InitTLSConfigFromCommandline(prefix string) {
 	var b bool
 	var sz string
 	b = cmdr.GetBoolRP(prefix, "client-auth")
@@ -89,26 +94,30 @@ func (s *CmdrTlsConfig) InitTlsConfigFromCommandline(prefix string) {
 
 	switch cmdr.GetIntRP(prefix, "tls-version", 2) {
 	case 0:
-		s.MinTlsVersion = tls.VersionTLS10
+		s.MinTLSVersion = tls.VersionTLS10
 	case 1:
-		s.MinTlsVersion = tls.VersionTLS11
+		s.MinTLSVersion = tls.VersionTLS11
 	case 3:
-		s.MinTlsVersion = tls.VersionTLS13
+		s.MinTLSVersion = tls.VersionTLS13
 	default:
-		s.MinTlsVersion = tls.VersionTLS12
+		s.MinTLSVersion = tls.VersionTLS12
 	}
 }
 
-func (s *CmdrTlsConfig) InitTlsConfigFromConfigFile(prefix string) {
-	// prefix := "mqtt.server.tls"
-	// tls:
-	//   enabled: true
-	//   cacert: root.pem
-	//   cert: cert.pem
-	//   key: cert.key
-	//   locations:
-	// 	   - ./ci/certs
-	// 	   - $CFG_DIR/certs
+// InitTLSConfigFromConfigFile loads CmdrTLSConfig members from cmdr config file.
+//
+// The entries in config file looks like:
+//
+//     prefix := "cmdr-http2.server.tls"
+//     tls:
+//       enabled: true
+//       cacert: root.pem
+//       cert: cert.pem
+//       key: cert.key
+//       locations:
+//     	   - ./ci/certs
+//     	   - $CFG_DIR/certs
+func (s *CmdrTLSConfig) InitTLSConfigFromConfigFile(prefix string) {
 	enabled := cmdr.GetBoolRP(prefix, "enabled")
 	if enabled {
 		s.ClientAuth = cmdr.GetBoolRP(prefix, "client-auth")
@@ -134,23 +143,23 @@ func (s *CmdrTlsConfig) InitTlsConfigFromConfigFile(prefix string) {
 			}
 		}
 
-		switch cmdr.GetIntRP(prefix, "tls-version", int(s.MinTlsVersion-tls.VersionTLS10)) {
+		switch cmdr.GetIntRP(prefix, "tls-version", int(s.MinTLSVersion-tls.VersionTLS10)) {
 		case 0:
-			s.MinTlsVersion = tls.VersionTLS10
+			s.MinTLSVersion = tls.VersionTLS10
 		case 1:
-			s.MinTlsVersion = tls.VersionTLS11
+			s.MinTLSVersion = tls.VersionTLS11
 		case 3:
-			s.MinTlsVersion = tls.VersionTLS13
+			s.MinTLSVersion = tls.VersionTLS13
 		default:
-			s.MinTlsVersion = tls.VersionTLS12
+			s.MinTLSVersion = tls.VersionTLS12
 		}
 	}
 }
 
-// ToServerTlsConfig builds an tls.Config object for server.Serve
-func (s *CmdrTlsConfig) ToServerTlsConfig() (config *tls.Config) {
+// ToServerTLSConfig builds an tls.Config object for server.Serve
+func (s *CmdrTLSConfig) ToServerTLSConfig() (config *tls.Config) {
 	var err error
-	config, err = s.newTlsConfig()
+	config, err = s.newTLSConfig()
 	if err == nil {
 		if s.Cacert != "" {
 			var rootPEM []byte
@@ -170,12 +179,13 @@ func (s *CmdrTlsConfig) ToServerTlsConfig() (config *tls.Config) {
 	return config
 }
 
-func (s *CmdrTlsConfig) ToTlsConfig() (config *tls.Config) {
-	config, _ = s.newTlsConfig()
+// ToTLSConfig converts to *tls.Config
+func (s *CmdrTLSConfig) ToTLSConfig() (config *tls.Config) {
+	config, _ = s.newTLSConfig()
 	return config
 }
 
-func (s *CmdrTlsConfig) newTlsConfig() (config *tls.Config, err error) {
+func (s *CmdrTLSConfig) newTLSConfig() (config *tls.Config, err error) {
 	var cert tls.Certificate
 	cert, err = tls.LoadX509KeyPair(s.Cert, s.Key)
 	if err != nil {
@@ -192,11 +202,11 @@ func (s *CmdrTlsConfig) newTlsConfig() (config *tls.Config, err error) {
 	// We will determine the cipher suites that we prefer.
 	config = &tls.Config{
 		Certificates: []tls.Certificate{cert},
-		MinVersion:   s.MinTlsVersion,
+		MinVersion:   s.MinTLSVersion,
 	}
 
 	// Require client certificates as needed
-	if s.IsClientAuthValid() {
+	if s.IsClientAuthEnabled() {
 		config.ClientAuth = tls.RequireAndVerifyClientCert
 	}
 
@@ -225,10 +235,11 @@ func (s *CmdrTlsConfig) newTlsConfig() (config *tls.Config, err error) {
 	return
 }
 
-func (s *CmdrTlsConfig) NewTlsListener(l net.Listener) (listener net.Listener, err error) {
+// NewTLSListener builds net.Listener for tls mode or not
+func (s *CmdrTLSConfig) NewTLSListener(l net.Listener) (listener net.Listener, err error) {
 	if s != nil && s.IsCertValid() {
 		var config *tls.Config
-		config, err = s.newTlsConfig()
+		config, err = s.newTLSConfig()
 		if err != nil {
 			logrus.Fatal(err)
 		}
@@ -240,10 +251,11 @@ func (s *CmdrTlsConfig) NewTlsListener(l net.Listener) (listener net.Listener, e
 // Dial connects to the given network address using net.Dial
 // and then initiates a TLS handshake, returning the resulting
 // TLS connection.
+//
 // Dial interprets a nil configuration as equivalent to
 // the zero configuration; see the documentation of Config
 // for the defaults.
-func (s *CmdrTlsConfig) Dial(network, addr string) (conn net.Conn, err error) {
+func (s *CmdrTLSConfig) Dial(network, addr string) (conn net.Conn, err error) {
 	if s != nil && s.IsServerCertValid() {
 		roots := x509.NewCertPool()
 
@@ -260,7 +272,7 @@ func (s *CmdrTlsConfig) Dial(network, addr string) (conn net.Conn, err error) {
 			RootCAs: roots,
 		}
 
-		if s.IsClientAuthValid() {
+		if s.IsClientAuthEnabled() {
 			var cert tls.Certificate
 			cert, err = tls.LoadX509KeyPair(s.Cert, s.Key)
 			if err != nil {
@@ -280,7 +292,7 @@ func (s *CmdrTlsConfig) Dial(network, addr string) (conn net.Conn, err error) {
 	return
 }
 
-func (s *CmdrTlsConfig) addCert(roots *x509.CertPool, certPath string) (err error) {
+func (s *CmdrTLSConfig) addCert(roots *x509.CertPool, certPath string) (err error) {
 	if certPath != "" {
 		var rootPEM []byte
 		rootPEM, err = ioutil.ReadFile(certPath)
