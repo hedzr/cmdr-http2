@@ -1,0 +1,74 @@
+app:
+
+  logger:
+    level: INFO                  # logrus based: OFF, TRACE, DEBUG, INFO, WARNING, ERROR, FATAL, PANIC
+    format: text                 # text (default), json, logfmt
+    #target: journal             # missing or 'default': "$dir/$serverName.log" will be created under daemon mode; 'journal': log to stdout and stderr, and you could send its to journal
+    #dir: /var/log/$APPNAME      # never used.
+    keep-empty-field: false      # keep the field even if its value is empty
+    timestamp:                   # auto (enabled when level >= debug), true, false.
+
+    # journal mode:
+    # log message will be print to stdout and stderr directly;
+    # and, use systemd .service configuration to journal;
+    #
+    #
+    #
+
+  runmode:
+
+  cmdr-http2:
+    debug: true
+
+
+    client:  # h2 client
+
+      tls:
+        enabled: true
+        cacert: root.pem
+        server-cert: server.pem
+        client-auth: true
+        cert: client.pem
+        key: client.key
+        locations:
+          - ./ci/certs
+          - $CFG_DIR/certs
+
+
+    server:  # h2 server
+
+      # if cmdr.InDebugging() || cmdr.GetDebugMode() {
+      debug:
+        dump-sessions: false
+        dump-subscriptions: true
+      # }
+
+      # The default ports for the whole mqttlib.
+      ports:
+        default: 5151
+        tls: 5152
+        websocket: 443
+
+      tls:
+        enabled: true
+        client-auth: false      # true
+        cacert: root.pem        # optional for client ca cert
+        cert: server-bundle.pem # for server cert, it MUST BE a bundle cert with all root ca cert chains
+        key: cert.key
+        locations:
+          - ./ci/certs
+          - $CFG_DIR/certs
+
+      websocket:
+        max-message-size: 32k  # 2M
+
+      autocert:
+        enabled: false
+        domains: ["example.com"]
+        second-level-domains: ["api", "home", "res"]
+        dir-cache: ./ci/certs
+
+    tui:
+
+
+
