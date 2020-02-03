@@ -7,27 +7,17 @@ import (
 	"crypto/tls"
 	"fmt"
 	"github.com/hedzr/cmdr"
-	tls2 "github.com/hedzr/cmdr-http2/cli/server/tls"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/hedzr/cmdr/plugin/daemon/impl"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
-	"io"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"reflect"
 	"time"
-	"unsafe"
 
-	"github.com/gin-gonic/gin"
-
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/core/host"
-	"github.com/kataras/iris/v12/core/netutil"
-	"github.com/kataras/iris/v12/middleware/logger"
-	"github.com/kataras/iris/v12/middleware/recover"
+	tls2 "github.com/hedzr/cmdr-http2/cli/server/tls"
 )
 
 const (
@@ -46,8 +36,9 @@ type (
 		certManager *autocert.Manager
 		Type        muxType
 		mux         *http.ServeMux
-		router      *gin.Engine
-		irisApp     *iris.Application
+		routerImpl  routerMux
+		// router      *gin.Engine
+		// irisApp     *iris.Application
 	}
 )
 
@@ -174,25 +165,18 @@ func (d *daemonImpl) enableGracefulShutdown(srv *http.Server, stopCh, doneCh cha
 }
 
 func (d *daemonImpl) getHandler() http.Handler {
-	switch d.Type {
-	case typeGin:
-		return d.router
-	case typeIris:
-		return d.irisApp
-	default:
-		return d.mux
-	}
+	return d.routerImpl.Handler()
 }
 
 func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan struct{}, listener net.Listener) (err error) {
 	d.appTag = cmd.GetRoot().AppName
 	logrus.Debugf("%s daemon OnRun, pid = %v, ppid = %v", d.appTag, os.Getpid(), os.Getppid())
 
-	port := cmdr.GetIntR("cmdr-http2.server.port")
+	port := cmdr.GetIntR("oakauth.server.port")
 
 	// Tweak configuration values here.
 	var (
-		config    = tls2.NewCmdrTLSConfig("cmdr-http2.server.tls", "server.start")
+		config    = tls2.NewCmdrTLSConfig("oakauth.server.tls", "server.start")
 		tlsConfig = d.checkAndEnableAutoCert(config)
 	)
 
@@ -200,33 +184,23 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 	logrus.Tracef("logger level: %v", logrus.GetLevel())
 
 	if config.IsServerCertValid() || tlsConfig.GetCertificate == nil {
-		port = cmdr.GetIntR("cmdr-http2.server.ports.tls")
+		port = cmdr.GetIntR("oakauth.server.ports.tls")
 	}
 
 	switch d.Type {
 	case typeGin:
-		// d.router = gin.Default()
-		gin.ForceConsoleColor()
-		d.router = gin.New()
-		d.router.Use(gin.Logger())
-		d.router.Use(gin.Recovery())
-		// d.router.GET("/benchmark", MyBenchLogger(), benchEndpoint)
-		err = d.buildGinRoutes(d.router)
+		d.routerImpl = newGin()
+		d.routerImpl.BuildRoutes()
 
 	case typeIris:
-		d.irisApp = iris.New()
-		d.irisApp.Logger().SetLevel("debug")
-		d.irisApp.Use(recover.New())
-		d.irisApp.Use(logger.New())
-		err = d.buildIrisRoutes(d.irisApp)
+		d.routerImpl = newIris()
+		d.routerImpl.BuildRoutes()
 
 	default:
-		d.mux = http.NewServeMux()
-		err = d.buildRoutes(d.mux)
-	}
-
-	if err != nil {
-		return
+		d.routerImpl = newStdMux()
+		d.routerImpl.BuildRoutes()
+		// d.mux = http.NewServeMux()
+		// err = d.buildRoutes(d.mux)
 	}
 
 	if port == 0 {
@@ -310,33 +284,7 @@ func (d *daemonImpl) serve(srv *http.Server, listener net.Listener, certFile, ke
 	}()
 
 	h2listener = listener
-
-	switch d.Type {
-	case typeIris:
-		return d.irisApp.Run(iris.Raw(func() error {
-			su := d.irisApp.NewHost(srv)
-			if netutil.IsTLS(su.Server) {
-				h2listener = tls.NewListener(h2listener, su.Server.TLSConfig)
-				su.Configure(func(su *host.Supervisor) {
-					rs := reflect.ValueOf(su).Elem()
-					// rf := rs.FieldByName("manuallyTLS")
-					rf := rs.Field(2)
-					// rf can't be read or set.
-					rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
-					// Now rf can be read and set.
-
-					// su.manuallyTLS = true
-					i := true
-					ri := reflect.ValueOf(&i).Elem() // i, but writeable
-					rf.Set(ri)
-				})
-			}
-			err = su.Serve(h2listener)
-			return err
-		}), iris.WithoutServerError(iris.ErrServerClosed))
-	default:
-		return srv.ServeTLS(h2listener, certFile, keyFile)
-	}
+	return d.routerImpl.Serve(srv, h2listener, certFile, keyFile)
 }
 
 func (d *daemonImpl) worker(stopCh, doneCh chan struct{}) {
@@ -353,104 +301,11 @@ LOOP:
 	doneCh <- struct{}{}
 }
 
-// https://revel.github.io/
-// https://github.com/revel/revel
-
-func (d *daemonImpl) buildIrisRoutes(app *iris.Application) (err error) {
-	// https://iris-go.com/start/
-	// https://github.com/kataras/iris
-	//
-	// https://www.slant.co/topics/1412/~best-web-frameworks-for-go
-
-	app.Get("/", func(c iris.Context) {
-		_, _ = c.JSON(iris.Map{"message": "Hello Iris!"})
-	})
-	app.Get("/ping", func(ctx iris.Context) {
-		_, _ = ctx.WriteString("pong")
-	})
-	// Resource: http://localhost:1380
-	app.Handle("GET", "/welcome", func(ctx iris.Context) {
-		_, _ = ctx.HTML("<h1>Welcome</h1>")
-	})
-
-	// app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
-
-	app.Get("/s/:path", d.echoIrisHandler)
-	return
-}
-
-func (d *daemonImpl) echoIrisHandler(ctx iris.Context) {
-	p := ctx.Params().GetString("path")
-	if p == "zero" {
-		d0(8, 0) // raise a 0-divide panic and it will be recovered by http.Conn.serve(ctx)
-	}
-	_, _ = ctx.WriteString(p)
-}
-
-func (d *daemonImpl) buildGinRoutes(mux *gin.Engine) (err error) {
-	// https://github.com/gin-gonic/gin
-	// https://github.com/gin-contrib/multitemplate
-	// https://github.com/gin-contrib
-	//
-	// https://www.mindinventory.com/blog/top-web-frameworks-for-development-golang/
-
-	mux.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	mux.GET("/hello", helloGinHandler)
-
-	mux.GET("/s/*action", echoGinHandler)
-
-	// mux.Static("/assets", "./assets")
-	mux.StaticFS("/public", http.Dir("./public"))
-	mux.StaticFile("/favicon.ico", "./resources/favicon.ico")
-	
-	return
-}
-
-func helloGinHandler(c *gin.Context) {
-	_, _ = io.WriteString(c.Writer, "Hello, world!\n")
-}
-
-func echoGinHandler(c *gin.Context) {
-	action := c.Param("action")
-	if action == "/zero" {
-		d0(8, 0) // raise a 0-divide panic and it will be recovered by http.Conn.serve(ctx)
-	}
-	_, _ = io.WriteString(c.Writer, action)
-}
-
-func (d *daemonImpl) buildRoutes(mux *http.ServeMux) (err error) {
-	// https://blog.merovius.de/2017/06/18/how-not-to-use-an-http-router.html
-	//
-
-	mux.HandleFunc("/hello", helloHandler)
-	mux.HandleFunc("/", echoHandler)
-	return
-}
-
 func (d *daemonImpl) handle(w http.ResponseWriter, r *http.Request) {
 	// Log the request protocol
 	log.Printf("Got connection: %s", r.Proto)
 	// Send a message back to the client
 	_, _ = w.Write([]byte("Hello"))
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	_, _ = io.WriteString(w, "Hello, world!\n")
-}
-
-func echoHandler(w http.ResponseWriter, r *http.Request) {
-	_, _ = io.WriteString(w, r.URL.Path)
-	if r.URL.Path == "/zero" {
-		d0(8, 0) // raise a 0-divide panic and it will be recovered by http.Conn.serve(ctx)
-	}
-}
-
-func d0(a, b int) int {
-	return a / b
 }
 
 const (

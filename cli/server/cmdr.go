@@ -7,7 +7,6 @@ import (
 	"github.com/hedzr/cmdr-http2/cli/server/tls"
 	"github.com/hedzr/cmdr/plugin/daemon"
 	"github.com/sirupsen/logrus"
-	"net"
 	"time"
 )
 
@@ -112,12 +111,3 @@ func onServerPreStart(cmd *cmdr.Command, args []string) (err error) {
 	logrus.Debug("onServerPreStart")
 	return
 }
-
-func getOnGetListener() net.Listener {
-	// l := h2listener
-	// h2listener = nil
-	// return l
-	return h2listener
-}
-
-var h2listener net.Listener
