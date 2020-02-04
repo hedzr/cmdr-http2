@@ -187,21 +187,24 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 		port = cmdr.GetIntR("oakauth.server.ports.tls")
 	}
 
+	switch cmdr.GetStringR("oakauth.server.type") {
+	case "iris":
+		d.Type = typeIris
+	case "gin":
+		d.Type = typeGin
+	default:
+		d.Type = typeDefault
+	}
+
 	switch d.Type {
 	case typeGin:
 		d.routerImpl = newGin()
-		d.routerImpl.BuildRoutes()
-
 	case typeIris:
 		d.routerImpl = newIris()
-		d.routerImpl.BuildRoutes()
-
 	default:
 		d.routerImpl = newStdMux()
-		d.routerImpl.BuildRoutes()
-		// d.mux = http.NewServeMux()
-		// err = d.buildRoutes(d.mux)
 	}
+	d.routerImpl.BuildRoutes()
 
 	if port == 0 {
 		logrus.Fatal("port not defined")

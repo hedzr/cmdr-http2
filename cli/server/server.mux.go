@@ -25,7 +25,7 @@ func (d *stdImpl) Handler() http.Handler {
 }
 
 func (d *stdImpl) Serve(srv *http.Server, listener net.Listener, certFile, keyFile string) (err error) {
-	return srv.ServeTLS(h2listener, certFile, keyFile)
+	return srv.ServeTLS(listener, certFile, keyFile)
 }
 
 func (d *stdImpl) BuildRoutes() {

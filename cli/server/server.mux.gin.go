@@ -17,12 +17,20 @@ type ginImpl struct {
 	router *gin.Engine
 }
 
+func (d *ginImpl) init() {
+	gin.ForceConsoleColor()
+	d.router = gin.New()
+	d.router.Use(gin.Logger())
+	d.router.Use(gin.Recovery())
+	// d.router.GET("/benchmark", MyBenchLogger(), benchEndpoint)
+}
+
 func (d *ginImpl) Handler() http.Handler {
 	return d.router
 }
 
 func (d *ginImpl) Serve(srv *http.Server, listener net.Listener, certFile, keyFile string) (err error) {
-	return srv.ServeTLS(h2listener, certFile, keyFile)
+	return srv.ServeTLS(listener, certFile, keyFile)
 }
 
 func (d *ginImpl) BuildRoutes() {
@@ -40,14 +48,6 @@ func (d *ginImpl) BuildRoutes() {
 	d.router.GET("/hello", helloGinHandler)
 
 	d.router.GET("/s/*action", echoGinHandler)
-}
-
-func (d *ginImpl) init() {
-	gin.ForceConsoleColor()
-	d.router = gin.New()
-	d.router.Use(gin.Logger())
-	d.router.Use(gin.Recovery())
-	// d.router.GET("/benchmark", MyBenchLogger(), benchEndpoint)
 }
 
 // func (d *daemonImpl) buildGinRoutes(mux *gin.Engine) (err error) {

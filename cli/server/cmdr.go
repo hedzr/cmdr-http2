@@ -77,6 +77,19 @@ func WithCmdrHook() cmdr.ExecOption {
 			// 	Group("Tool").
 			// 	Action(tls.CaCreate)
 
+			opt.NewFlagV(false, "iris", "iris").Description("use Iris engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
+				cmdr.Set("oakauth.server.type", "iris")
+				return
+			})
+			opt.NewFlagV(false, "gin", "gin").Description("use Gin engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
+				cmdr.Set("oakauth.server.type", "gin")
+				return
+			})
+			opt.NewFlagV(false, "std", "std").Description("use stdlib http.ServerMux engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
+				cmdr.Set("oakauth.server.type", "std")
+				return
+			})
+
 		}
 	}, func(root *cmdr.RootCommand, args []string) {
 		logrus.Debugf("cmd: root=%+v, args: %v", root, args)
