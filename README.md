@@ -3,6 +3,8 @@
 A [`cmdr`](https://github.com/hedzr/cmdr) demo app.
 `cmdr-http2` implements a http2 server with full daemon supports and graceful shutdown.
 
+NOTE: need cmdr v1.6.25+ [20200204]
+
 ```bash
 
 # clone and init

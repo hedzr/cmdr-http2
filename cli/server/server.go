@@ -164,30 +164,30 @@ func (d *daemonImpl) enableGracefulShutdown(srv *http.Server, stopCh, doneCh cha
 
 }
 
-func (d *daemonImpl) getHandler() http.Handler {
-	return d.routerImpl.Handler()
-}
-
 func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan struct{}, listener net.Listener) (err error) {
 	d.appTag = cmd.GetRoot().AppName
 	logrus.Debugf("%s daemon OnRun, pid = %v, ppid = %v", d.appTag, os.Getpid(), os.Getppid())
 
-	port := cmdr.GetIntR("oakauth.server.port")
-
 	// Tweak configuration values here.
 	var (
-		config    = tls2.NewCmdrTLSConfig("oakauth.server.tls", "server.start")
+		port      = cmdr.GetIntR("njuone.server.port")
+		config    = tls2.NewCmdrTLSConfig("njuone.server.tls", "server.start")
 		tlsConfig = d.checkAndEnableAutoCert(config)
 	)
 
 	logrus.Tracef("used config file: %v", cmdr.GetUsedConfigFile())
-	logrus.Tracef("logger level: %v", logrus.GetLevel())
+	logrus.Tracef("logger level: %v / %v", logrus.GetLevel(), cmdr.GetLoggerLevel())
 
 	if config.IsServerCertValid() || tlsConfig.GetCertificate == nil {
 		port = cmdr.GetIntR("oakauth.server.ports.tls")
 	}
 
-	switch cmdr.GetStringR("oakauth.server.type") {
+	if port == 0 {
+		logrus.Fatal("port not defined")
+	}
+	addr := fmt.Sprintf(":%d", port) // ":3300"
+
+	switch cmdr.GetStringR("njuone.server.type") {
 	case "iris":
 		d.Type = typeIris
 	case "gin":
@@ -204,18 +204,14 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 	default:
 		d.routerImpl = newStdMux()
 	}
-	d.routerImpl.BuildRoutes()
 
-	if port == 0 {
-		logrus.Fatal("port not defined")
-	}
-	addr := fmt.Sprintf(":%d", port) // ":3300"
+	d.routerImpl.BuildRoutes()
 
 	// Create a server on port 8000
 	// Exactly how you would run an HTTP/1.1 server
 	srv := &http.Server{
 		Addr:              addr,
-		Handler:           d.getHandler(), // d.mux, // http.HandlerFunc(d.handle),
+		Handler:           d.routerImpl.Handler(), // d.mux, // http.HandlerFunc(d.handle),
 		TLSConfig:         tlsConfig,
 		ReadHeaderTimeout: readHeaderTimeout,
 		WriteTimeout:      writeTimeout,

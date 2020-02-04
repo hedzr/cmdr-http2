@@ -2,15 +2,12 @@ package server
 
 import (
 	"crypto/tls"
+	"github.com/hedzr/cmdr"
 	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/core/host"
-	"github.com/kataras/iris/v12/core/netutil"
 	"github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
 	"net"
 	"net/http"
-	"reflect"
-	"unsafe"
 )
 
 func newIris() *irisImpl {
@@ -25,7 +22,25 @@ type irisImpl struct {
 
 func (d *irisImpl) init() {
 	d.irisApp = iris.New()
-	d.irisApp.Logger().SetLevel("debug")
+
+	l := cmdr.GetLoggerLevel()
+	n := "debug"
+	switch l {
+	case cmdr.OffLevel:
+		n = "disable"
+	case cmdr.FatalLevel, cmdr.PanicLevel:
+		n = "fatal"
+	case cmdr.ErrorLevel:
+		n = "error"
+	case cmdr.WarnLevel:
+		n = "warn"
+	case cmdr.InfoLevel:
+		n = "info"
+	default:
+		n = "debug"
+	}
+	d.irisApp.Logger().SetLevel(n)
+
 	d.irisApp.Use(recover.New())
 	d.irisApp.Use(logger.New())
 }
@@ -35,27 +50,31 @@ func (d *irisImpl) Handler() http.Handler {
 }
 
 func (d *irisImpl) Serve(srv *http.Server, listener net.Listener, certFile, keyFile string) (err error) {
-	return d.irisApp.Run(iris.Raw(func() error {
-		su := d.irisApp.NewHost(srv)
-		if netutil.IsTLS(su.Server) {
-			h2listener = tls.NewListener(listener, su.Server.TLSConfig)
-			su.Configure(func(su *host.Supervisor) {
-				rs := reflect.ValueOf(su).Elem()
-				// rf := rs.FieldByName("manuallyTLS")
-				rf := rs.Field(2)
-				// rf can't be read or set.
-				rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
-				// Now rf can be read and set.
+	// return d.irisApp.Run(iris.Raw(func() error {
+	// 	su := d.irisApp.NewHost(srv)
+	// 	if netutil.IsTLS(su.Server) {
+	// 		h2listener = tls.NewListener(listener, su.Server.TLSConfig)
+	// 		// logrus.Debugf("new h2listener: %v", su.Server.TLSConfig)
+	// 		su.Configure(func(su *host.Supervisor) {
+	// 			rs := reflect.ValueOf(su).Elem()
+	// 			// rf := rs.FieldByName("manuallyTLS")
+	// 			rf := rs.Field(2)
+	// 			// rf can't be read or set.
+	// 			rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
+	// 			// Now rf can be read and set.
+	// 
+	// 			// su.manuallyTLS = true
+	// 			i := true
+	// 			ri := reflect.ValueOf(&i).Elem() // i, but writeable
+	// 			rf.Set(ri)
+	// 		})
+	// 	}
+	// 	err = su.Serve(listener)
+	// 	return err
+	// }), iris.WithoutServerError(iris.ErrServerClosed))
 
-				// su.manuallyTLS = true
-				i := true
-				ri := reflect.ValueOf(&i).Elem() // i, but writeable
-				rf.Set(ri)
-			})
-		}
-		err = su.Serve(listener)
-		return err
-	}), iris.WithoutServerError(iris.ErrServerClosed))
+	h2listener = tls.NewListener(listener, srv.TLSConfig)
+	return d.irisApp.Run(iris.Listener(h2listener), iris.WithoutServerError(iris.ErrServerClosed))
 }
 
 func (d *irisImpl) BuildRoutes() {
@@ -78,6 +97,27 @@ func (d *irisImpl) BuildRoutes() {
 	// app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 
 	d.irisApp.Get("/s/:path", d.echoIrisHandler)
+	
+	//
+	// d.irisApp.Get("/users/{id:uint64}", func(ctx iris.Context){
+	// 	id := ctx.Params().GetUint64Default("id", 0)
+	// 	// [...]
+	// })
+	// d.irisApp.Get("/profile/{name:alphabetical max(255)}", func(ctx iris.Context){
+	// 	name := ctx.Params().Get("name")
+	// 	// len(name) <=255 otherwise this route will fire 404 Not Found
+	// 	// and this handler will not be executed at all.
+	// })
+	// 
+	// d.irisApp.Get("/someGet", getting)
+	// d.irisApp.Post("/somePost", posting)
+	// d.irisApp.Put("/somePut", putting)
+	// d.irisApp.Delete("/someDelete", deleting)
+	// d.irisApp.Patch("/somePatch", patching)
+	// d.irisApp.Head("/someHead", head)
+	// d.irisApp.Options("/someOptions", options)
+	
+	// user.Register(d.irisApp)
 }
 
 func (d *irisImpl) echoIrisHandler(ctx iris.Context) {

@@ -25,6 +25,7 @@ func (d *stdImpl) Handler() http.Handler {
 }
 
 func (d *stdImpl) Serve(srv *http.Server, listener net.Listener, certFile, keyFile string) (err error) {
+	// note that the h2listener have not been reassigned to the exact tlsListener
 	return srv.ServeTLS(listener, certFile, keyFile)
 }
 

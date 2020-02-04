@@ -78,15 +78,15 @@ func WithCmdrHook() cmdr.ExecOption {
 			// 	Action(tls.CaCreate)
 
 			opt.NewFlagV(false, "iris", "iris").Description("use Iris engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
-				cmdr.Set("oakauth.server.type", "iris")
+				cmdr.Set("cmdr-http2.server.type", "iris")
 				return
 			})
 			opt.NewFlagV(false, "gin", "gin").Description("use Gin engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
-				cmdr.Set("oakauth.server.type", "gin")
+				cmdr.Set("cmdr-http2.server.type", "gin")
 				return
 			})
 			opt.NewFlagV(false, "std", "std").Description("use stdlib http.ServerMux engine").Group("Mux").ToggleGroup("Mux").Action(func(cmd *cmdr.Command, args []string) (err error) {
-				cmdr.Set("oakauth.server.type", "std")
+				cmdr.Set("cmdr-http2.server.type", "std")
 				return
 			})
 
