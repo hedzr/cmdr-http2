@@ -28,7 +28,7 @@ func Entry() {
 		server.WithCmdrDaemonSupport(),
 		server.WithCmdrHook(),
 
-		cmdr.WithLogex(logrus.DebugLevel),
+		cmdr.WithLogex(cmdr.DebugLevel),
 		cmdr.WithLogexPrefix("logger"),
 
 		cmdr.WithWatchMainConfigFileToo(true),
