@@ -62,7 +62,7 @@ func (d *irisImpl) Serve(srv *http.Server, listener net.Listener, certFile, keyF
 	// 			// rf can't be read or set.
 	// 			rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
 	// 			// Now rf can be read and set.
-	// 
+	//
 	// 			// su.manuallyTLS = true
 	// 			i := true
 	// 			ri := reflect.ValueOf(&i).Elem() // i, but writeable
@@ -97,7 +97,7 @@ func (d *irisImpl) BuildRoutes() {
 	// app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 
 	d.irisApp.Get("/s/:path", d.echoIrisHandler)
-	
+
 	//
 	// d.irisApp.Get("/users/{id:uint64}", func(ctx iris.Context){
 	// 	id := ctx.Params().GetUint64Default("id", 0)
@@ -108,7 +108,7 @@ func (d *irisImpl) BuildRoutes() {
 	// 	// len(name) <=255 otherwise this route will fire 404 Not Found
 	// 	// and this handler will not be executed at all.
 	// })
-	// 
+	//
 	// d.irisApp.Get("/someGet", getting)
 	// d.irisApp.Post("/somePost", posting)
 	// d.irisApp.Put("/somePut", putting)
@@ -116,7 +116,7 @@ func (d *irisImpl) BuildRoutes() {
 	// d.irisApp.Patch("/somePatch", patching)
 	// d.irisApp.Head("/someHead", head)
 	// d.irisApp.Options("/someOptions", options)
-	
+
 	// user.Register(d.irisApp)
 }
 
