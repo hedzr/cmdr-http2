@@ -52,7 +52,7 @@ func Entry() {
 		trace.WithTraceEnable(true),
 
 		cmdr.WithUnknownOptionHandler(onUnknownOptionHandler),
-		cmdr.WithUnhandledErrorHandler(onUnhandleErrorHandler),
+		cmdr.WithUnhandledErrorHandler(onUnhandledErrorHandler),
 
 		shell.WithShellModule(),
 	); err != nil {
@@ -66,7 +66,7 @@ func onUnknownOptionHandler(isFlag bool, title string, cmd *cmdr.Command, args [
 }
 
 // to make the h2 server recoverable
-func onUnhandleErrorHandler(err interface{}) {
+func onUnhandledErrorHandler(err interface{}) {
 	// debug.PrintStack()
 	// pprof.Lookup("goroutine").WriteTo(os.Stdout, 1)
 	if e, ok := err.(error); ok {
