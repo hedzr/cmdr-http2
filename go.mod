@@ -17,6 +17,7 @@ require (
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/gin-gonic/gin v1.5.0
 	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/gorilla/mux v1.7.4
 	github.com/hedzr/cmdr v1.6.26
 	github.com/hedzr/logex v1.1.5
 	github.com/imkira/go-interpol v1.1.0 // indirect
