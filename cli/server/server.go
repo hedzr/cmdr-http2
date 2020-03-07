@@ -26,6 +26,7 @@ const (
 	typeDefault muxType = iota
 	typeGin
 	typeIris
+	typeGorilla
 )
 
 type (
@@ -170,8 +171,8 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 
 	// Tweak configuration values here.
 	var (
-		port      = cmdr.GetIntR("njuone.server.port")
-		config    = tls2.NewCmdrTLSConfig("njuone.server.tls", "server.start")
+		port      = cmdr.GetIntR("cmdr-http2.server.port")
+		config    = tls2.NewCmdrTLSConfig("cmdr-http2.server.tls", "server.start")
 		tlsConfig = d.checkAndEnableAutoCert(config)
 	)
 
@@ -179,7 +180,7 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 	logrus.Tracef("logger level: %v / %v", logrus.GetLevel(), cmdr.GetLoggerLevel())
 
 	if config.IsServerCertValid() || tlsConfig.GetCertificate == nil {
-		port = cmdr.GetIntR("oakauth.server.ports.tls")
+		port = cmdr.GetIntR("cmdr-http2.server.ports.tls")
 	}
 
 	if port == 0 {
@@ -187,11 +188,14 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 	}
 	addr := fmt.Sprintf(":%d", port) // ":3300"
 
-	switch cmdr.GetStringR("njuone.server.type") {
+	serverType := cmdr.GetStringR("cmdr-http2.server.type")
+	switch serverType {
 	case "iris":
 		d.Type = typeIris
 	case "gin":
 		d.Type = typeGin
+	case "gorilla":
+		d.Type = typeGorilla
 	default:
 		d.Type = typeDefault
 	}
@@ -201,9 +205,12 @@ func (d *daemonImpl) OnRun(cmd *cmdr.Command, args []string, stopCh, doneCh chan
 		d.routerImpl = newGin()
 	case typeIris:
 		d.routerImpl = newIris()
+	case typeGorilla:
+		d.routerImpl = newGorilla()
 	default:
 		d.routerImpl = newStdMux()
 	}
+	logrus.Printf("serverType: %v, %v", serverType, d.Type)
 
 	d.routerImpl.BuildRoutes()
 
