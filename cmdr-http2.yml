@@ -15,7 +15,7 @@ app:
     #
     #
 
-  runmode:
+  runmode:    # prod, devel
 
   cmdr-http2:
     debug: true
@@ -42,6 +42,8 @@ app:
         dump-sessions: false
         dump-subscriptions: true
       # }
+
+      type: gorilla             # gin, iris, gorilla, default, ...
 
       # The default ports for the whole mqttlib.
       ports:
