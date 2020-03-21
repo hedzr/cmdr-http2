@@ -4,7 +4,7 @@ go 1.12
 
 // replace github.com/hedzr/cmdr => ../cmdr
 
-// replace github.com/hedzr/logex v0.0.0 => ../logex
+replace github.com/hedzr/logex => ../logex
 
 // replace github.com/hedzr/pools v0.0.0 => ../pools
 
@@ -18,8 +18,8 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.4
-	github.com/hedzr/cmdr v1.6.26
-	github.com/hedzr/logex v1.1.5
+	github.com/hedzr/cmdr v1.6.31
+	github.com/hedzr/logex v1.1.6
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/iris/v12 v12.1.4
@@ -39,11 +39,10 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
+	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	gopkg.in/hedzr/errors.v2 v2.0.11
-	gopkg.in/yaml.v2 v2.2.7 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20191120175047-4206685974f2
+	gopkg.in/yaml.v3 v3.0.0-20200121175148-a6ecf24a6d71
 )
 
 // NOTE: In github.com/kataras/iris/v12, gopkg.in/yaml.v2 was referred indirectly.
