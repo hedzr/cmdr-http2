@@ -18,7 +18,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.4
-	github.com/hedzr/cmdr v1.6.31
+	github.com/hedzr/cmdr v1.6.33
 	github.com/hedzr/logex v1.1.6
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
