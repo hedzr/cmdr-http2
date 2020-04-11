@@ -34,6 +34,47 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 	server.AttachToCmdr(root)
 
+	soundex(root)
+	xy(root)
+	mxTest(root)
+	kv(root)
+	ms(root)
+	
+	// // http 2 client
+	//
+	// root.NewSubCommand().
+	// 	Titles("h2", "h2-test").
+	// 	Description("test http 2 client", "test http 2 client,\nverbose long descriptions here.").
+	// 	Group("Test").
+	// 	Action(func(cmd *cmdr.Command, args []string) (err error) {
+	// 		server.RunClient()
+	// 		return
+	// 	})
+
+	//
+	//
+
+	// server.OnBuildCmd(rootCmd)
+
+	return
+}
+
+func soundex(root cmdr.OptCmd) {
+	// soundex
+
+	root.NewSubCommand("soundex", "snd", "sndx", "sound").
+		Description("soundex test").
+		Group("Test").
+		TailPlaceholder("[text1, text2, ...]").
+		Action(func(cmd *cmdr.Command, args []string) (err error) {
+			for ix, s := range args {
+				fmt.Printf("%5d. %s => %s\n", ix, s, cmdr.Soundex(s))
+			}
+			return
+		})
+}
+
+func xy(root cmdr.OptCmd) {
 	// xy-print
 
 	root.NewSubCommand().
@@ -55,7 +96,9 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 
 			return
 		})
+}
 
+func mxTest(root cmdr.OptCmd) {
 	// mx-test
 
 	mx := root.NewSubCommand().
@@ -79,18 +122,9 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Group("").
 		Placeholder("MESG").
 		ExternalTool(cmdr.ExternalToolEditor)
+}
 
-	// // http 2 client
-	//
-	// root.NewSubCommand().
-	// 	Titles("h2", "h2-test").
-	// 	Description("test http 2 client", "test http 2 client,\nverbose long descriptions here.").
-	// 	Group("Test").
-	// 	Action(func(cmd *cmdr.Command, args []string) (err error) {
-	// 		server.RunClient()
-	// 		return
-	// 	})
-
+func kv(root cmdr.OptCmd) {
 	// kv
 
 	kvCmd := root.NewSubCommand().
@@ -116,8 +150,9 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Titles("i", "input").
 		Description("Read the input file (*.json / *.yml)", ``).
 		Placeholder("FILE")
+}
 
-	// ms
+func ms(root cmdr.OptCmd) { // ms
 
 	msCmd := root.NewSubCommand().
 		Titles("ms", "micro-service", "microservice").
@@ -341,13 +376,6 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 		Titles("a", "address", "addr").
 		Description("the address of the service (by id or name)", ``).
 		DefaultValue("", "HOST:PORT")
-
-	//
-	//
-
-	// server.OnBuildCmd(rootCmd)
-
-	return
 }
 
 func attachModifyFlags(cmd cmdr.OptCmd) {
