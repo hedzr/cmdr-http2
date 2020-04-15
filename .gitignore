@@ -28,6 +28,7 @@ docs/
 *.dmg
 *.deb
 *.rpm
+*.local
 coverage.txt
 cover.out
 cover.html
