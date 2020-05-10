@@ -31,6 +31,8 @@ func Entry() {
 		cmdr.WithLogex(cmdr.DebugLevel),
 		cmdr.WithLogexPrefix("logger"),
 
+		cmdr.WithHelpTabStop(43),
+
 		cmdr.WithWatchMainConfigFileToo(true),
 		cmdr.WithNoWatchConfigFiles(false),
 		cmdr.WithOptionMergeModifying(func(keyPath string, value, oldVal interface{}) {
@@ -46,19 +48,36 @@ func Entry() {
 			logrus.Infof("%%-> -> %q: %v -> %v", keyPath, oldVal, value)
 		}),
 
-		cmdr.WithHelpTabStop(43),
-
 		// sample.WithSampleCmdrOption(),
 		trace.WithTraceEnable(true),
 
 		cmdr.WithUnknownOptionHandler(onUnknownOptionHandler),
 		cmdr.WithUnhandledErrorHandler(onUnhandledErrorHandler),
 
+		cmdr.WithOnSwitchCharHit(onSwitchCharHit),
+		cmdr.WithOnPassThruCharHit(onPassThruCharHit),
+		
 		shell.WithShellModule(),
 	); err != nil {
 		logrus.Errorf("Error: %v", err)
 	}
 
+}
+
+func onSwitchCharHit(parsed *cmdr.Command, switchChar string, args []string) (err error) {
+	if parsed != nil {
+		fmt.Printf("the last parsed command is %q - %q\n", parsed.GetTitleNames(), parsed.Description)
+	}
+	fmt.Printf("SwitchChar FOUND: %v\nremains: %v\n\n", switchChar, args)
+	return // cmdr.ErrShouldBeStopException
+}
+
+func onPassThruCharHit(parsed *cmdr.Command, switchChar string, args []string) (err error) {
+	if parsed != nil {
+		fmt.Printf("the last parsed command is %q - %q\n", parsed.GetTitleNames(), parsed.Description)
+	}
+	fmt.Printf("PassThrough flag FOUND: %v\nremains: %v\n\n", switchChar, args)
+	return // ErrShouldBeStopException
 }
 
 func onUnknownOptionHandler(isFlag bool, title string, cmd *cmdr.Command, args []string) (fallbackToDefaultDetector bool) {
