@@ -34,7 +34,7 @@ func WithShellModule() cmdr.ExecOption {
 
 			rootOpt := cmdr.NewCmdFrom(&root.Command)
 			shell := rootOpt.NewSubCommand().
-				Titles("sh", "shell").
+				Titles("shell", "sh").
 				Description("enable internal shell prompt mode", "").
 				Action(doShellModeAction)
 			shell.NewFlagV(true).Titles("0", "demo-0").ToggleGroup("Sample")

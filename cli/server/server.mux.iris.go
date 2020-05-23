@@ -39,10 +39,10 @@ func (d *irisImpl) init() {
 	default:
 		n = "debug"
 	}
-	d.irisApp.Logger().SetLevel(n)
 
 	d.irisApp.Use(recover.New())
 	d.irisApp.Use(logger.New())
+	d.irisApp.Logger().SetLevel(n)
 }
 
 func (d *irisImpl) Handler() http.Handler {

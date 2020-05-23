@@ -18,7 +18,7 @@ func WithSampleCmdrOption() cmdr.ExecOption {
 			}
 			if serverStartCmd != nil {
 				cmdr.NewInt(5100).
-					Titles("vnc", "vnc-server").
+					Titles("vnc-server",  "vnc").
 					Description("start as a vnc server (just a demo)").
 					Placeholder("PORT").
 					AttachTo(cmdr.NewCmdFrom(serverStartCmd))

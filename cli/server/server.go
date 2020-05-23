@@ -64,7 +64,7 @@ func newDaemon() daemon.Daemon {
 //
 // 			} else {
 // 				opt.NewFlag(cmdr.OptFlagTypeInt).
-// 					Titles("p", "port").
+// 					Titles("port", "p").
 // 					Description("the port to listen.", "").
 // 					Group("").
 // 					DefaultValue(defaultPort, "PORT")
