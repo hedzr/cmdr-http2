@@ -13,22 +13,20 @@ go 1.12
 // NOTE: In github.com/kataras/iris/v12, gopkg.in/yaml.v2 was referred indirectly.
 
 require (
-	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/c-bata/go-prompt v0.2.3
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.4
-	github.com/hedzr/cmdr v1.6.47
-	github.com/hedzr/logex v1.1.8
+	github.com/hedzr/cmdr v1.7.11
+	github.com/hedzr/logex v1.2.9
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/iris/v12 v12.1.4
+	github.com/kataras/iris/v12 v12.1.8
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mattn/go-tty v0.0.3 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180302032504-28f5fe9fd9e9 // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.12.2 // indirect
@@ -37,14 +35,14 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/valyala/fasthttp v1.12.0 // indirect
+	github.com/valyala/fasthttp v1.16.0 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180219094614-024efa345fa9 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
-	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7
-	gopkg.in/hedzr/errors.v2 v2.0.12
-	gopkg.in/yaml.v3 v3.0.0-20200504145624-a81ed60d5f3a
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de
+	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+	gopkg.in/hedzr/errors.v2 v2.1.0
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
