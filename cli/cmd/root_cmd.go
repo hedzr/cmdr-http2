@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hedzr/cmdr"
 	"github.com/hedzr/cmdr-http2/cli/server"
+	"github.com/hedzr/cmdr/tool"
 	"github.com/sirupsen/logrus"
 )
 
@@ -39,7 +40,7 @@ func buildRootCmd() (rootCmd *cmdr.RootCommand) {
 	mxTest(root)
 	kv(root)
 	ms(root)
-	
+
 	// // http 2 client
 	//
 	// root.NewSubCommand().
@@ -68,7 +69,7 @@ func soundex(root cmdr.OptCmd) {
 		TailPlaceholder("[text1, text2, ...]").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
 			for ix, s := range args {
-				fmt.Printf("%5d. %s => %s\n", ix, s, cmdr.Soundex(s))
+				fmt.Printf("%5d. %s => %s\n", ix, s, tool.Soundex(s))
 			}
 			return
 		})
@@ -204,13 +205,13 @@ func ms(root cmdr.OptCmd) { // ms
 		Titles("tags", "t").
 		Description("tags operations of a micro-service [fake]", "").
 		Group("")
-	
+
 	attachConsulConnectFlags(msTagsCmd)
 
 	// ms tags ls
 
 	msTagsCmd.NewSubCommand().
-		Titles("list","ls",  "l", "lst", "dir").
+		Titles("list", "ls", "l", "lst", "dir").
 		Description("list tags [fake]", "").
 		Group("2333.List").
 		Action(func(cmd *cmdr.Command, args []string) (err error) {
@@ -256,7 +257,7 @@ func ms(root cmdr.OptCmd) { // ms
 		DefaultValue([]string{}, "LIST").
 		Group("List")
 	c2.NewFlag(cmdr.OptFlagTypeStringSlice).
-		Titles("remove","r",  "rm-list", "rm", "del", "delete").
+		Titles("remove", "r", "rm-list", "rm", "del", "delete").
 		Description("a comma list to be removed.", ``).
 		DefaultValue([]string{}, "LIST").
 		Group("List")
@@ -320,12 +321,12 @@ func ms(root cmdr.OptCmd) { // ms
 	attachModifyFlags(msTagsModifyCmd)
 
 	msTagsModifyCmd.NewFlag(cmdr.OptFlagTypeStringSlice).
-		Titles( "add", "a","add-list").
+		Titles("add", "a", "add-list").
 		Description("a comma list to be added.", ``).
 		DefaultValue([]string{}, "LIST").
 		Group("List")
 	msTagsModifyCmd.NewFlag(cmdr.OptFlagTypeStringSlice).
-		Titles( "remove", "r", "rm-list", "rm", "del", "delete").
+		Titles("remove", "r", "rm-list", "rm", "del", "delete").
 		Description("a comma list to be removed.", ``).
 		DefaultValue([]string{}, "LIST").
 		Group("List")
@@ -379,7 +380,7 @@ func attachModifyFlags(cmd cmdr.OptCmd) {
 		Group("Mode")
 
 	cmd.NewFlag(cmdr.OptFlagTypeBool).
-		Titles("meta","m",  "meta-mode").
+		Titles("meta", "m", "meta-mode").
 		Description("In 'Meta Mode', service 'NodeMeta' field will be updated instead of 'Tags'. (--plain assumed false).", ``).
 		DefaultValue(false, "").
 		Group("Mode")
@@ -426,12 +427,12 @@ func attachConsulConnectFlags(cmd cmdr.OptCmd) {
 		DefaultValue("/", "ROOT").
 		Group("Consul")
 	cmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles( "cacert", "ca").
+		Titles("cacert", "ca").
 		Description("Consul Client CA cert)", ``).
 		DefaultValue("", "FILE").
 		Group("Consul")
 	cmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles( "cert", "").
+		Titles("cert", "").
 		Description("Consul Client cert", ``).
 		DefaultValue("", "FILE").
 		Group("Consul")
@@ -441,7 +442,7 @@ func attachConsulConnectFlags(cmd cmdr.OptCmd) {
 		DefaultValue("http", "SCHEME").
 		Group("Consul")
 	cmd.NewFlag(cmdr.OptFlagTypeString).
-		Titles( "username", "u","user", "usr", "uid").
+		Titles("username", "u", "user", "usr", "uid").
 		Description("HTTP Basic auth user", ``).
 		DefaultValue("", "USERNAME").
 		Group("Consul")

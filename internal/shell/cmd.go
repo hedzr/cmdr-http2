@@ -3,13 +3,13 @@
 package shell
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/c-bata/go-prompt"
 	"github.com/hedzr/cmdr"
+	"github.com/hedzr/log/exec"
 	"github.com/sirupsen/logrus"
 	"os"
-	"os/exec"
+	exe "os/exec"
 	"strings"
 )
 
@@ -79,7 +79,7 @@ func executor(in string) {
 		os.Exit(0)
 	}
 
-	fmt.Println("Your input: " + in + " | for running " + cmdr.GetExcutablePath())
+	fmt.Println("Your input: " + in + " | for running " + exec.GetExecutablePath())
 
 	// cmd := exec.Command("/bin/sh", "-c", cmdr.GetExcutablePath()+" "+in)
 	// cmd.Stdin = os.Stdin
@@ -133,16 +133,21 @@ func ExecuteAndGetResult(s string) string {
 		return ""
 	}
 
-	out := &bytes.Buffer{}
-	cmd := exec.Command("/bin/sh", "-c", "kubectl "+s)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = out
-	if err := cmd.Run(); err != nil {
-		logrus.Error(err.Error())
+	_, out, err := exec.RunCommand("/bin/sh", true, "-c", "kubectl "+s)
+	if err != nil {
+		cmdr.Logger.Errorf("error in executing kubectl ...: %v", err)
 		return ""
 	}
-	r := string(out.Bytes())
-	return r
+	//out := &bytes.Buffer{}
+	//cmd := exec.RunCommand("/bin/sh", "-c", "kubectl "+s)
+	//cmd.Stdin = os.Stdin
+	//cmd.Stdout = out
+	//if err := cmd.Run(); err != nil {
+	//	logrus.Error(err.Error())
+	//	return ""
+	//}
+	//r := string(out.Bytes())
+	return out
 }
 
 func run1() {
@@ -202,13 +207,13 @@ func run3() {
 
 func executor3(t string) {
 	if t == "bash" {
-		cmd := exec.Command("bash")
+		cmd := exe.Command("bash")
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Run()
 	} else {
-		cmd := exec.Command(t)
+		cmd := exe.Command(t)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
